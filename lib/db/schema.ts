@@ -8,13 +8,13 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import type { AdapterAccount } from "next-auth/adapters";
 
-export const user = pgTable("user", {
-  id: uuid("id").defaultRandom().primaryKey().notNull(),
-  firstName: text("first_name"),
-  lastName: text("last_name"),
+export const users = pgTable("user", {
+  id: uuid("id").defaultRandom().notNull().primaryKey(),
+  name: text("name"),
   email: text("email").notNull(),
-  emailVerified: boolean("email_verified"),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   createdAt: timestamp("created_at", {
     withTimezone: true,
@@ -23,31 +23,40 @@ export const user = pgTable("user", {
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }),
 });
 
+export const user = users;
+
 export const userRelations = relations(user, ({ many }) => ({
   accounts: many(account),
 }));
 
-export const account = pgTable("account", {
-  id: uuid("id").defaultRandom().primaryKey().notNull(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  type: text("type").notNull(),
-  provider: text("provider").notNull(),
-  provideraccountid: text("provideraccountid").notNull(),
-  refreshToken: text("refresh_token"),
-  accessToken: text("access_token"),
-  expiresAt: integer("expires_at"),
-  tokenType: text("token_type"),
-  scope: text("scope"),
-  idToken: text("id_token"),
-  sessionState: text("session_state"),
-  createdAt: timestamp("created_at", {
-    withTimezone: true,
-    mode: "string",
-  }).defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }),
-});
+export const accounts = pgTable(
+  "account",
+  {
+    userId: uuid("userId")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccount["type"]>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+      mode: "string",
+    }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }),
+  },
+  (account) => ({
+    compoundKey: primaryKey(account.provider, account.providerAccountId),
+  })
+);
+
+export const account = accounts;
 
 export const accountRelations = relations(account, ({ one }) => ({
   user: one(user, {
@@ -56,22 +65,25 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
-export const session = pgTable("session", {
-  id: uuid("id").defaultRandom().primaryKey().notNull(),
-  userId: uuid("user_id")
+export const sessions = pgTable("session", {
+  sessionToken: text("sessionToken").notNull().primaryKey(),
+  userId: uuid("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  type: text("type").notNull(),
-  provider: text("provider").notNull(),
-  provideraccountid: text("provideraccountid").notNull(),
-  refreshToken: text("refresh_token"),
-  accessToken: text("access_token"),
-  expiresAt: integer("expires_at"),
-  tokenType: text("token_type"),
-  scope: text("scope"),
-  idToken: text("id_token"),
-  sessionState: text("session_state"),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
 });
+
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (vt) => ({
+    compoundKey: primaryKey(vt.identifier, vt.token),
+  })
+);
 
 export const feed = pgTable("feed", {
   id: uuid("id").defaultRandom().primaryKey().notNull(),

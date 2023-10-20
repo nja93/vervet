@@ -17,6 +17,7 @@ import { cwd, exit } from "node:process";
 import { loadEnvConfig } from "@next/env";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { TFeedTemplate, TUser, TUserFeed, TUserTemplate } from "@/lib/db/types";
+import type { ProviderType } from "next-auth/providers/index";
 
 loadEnvConfig(cwd());
 
@@ -45,14 +46,13 @@ const main = async (seed = null) => {
     let firstName = faker.person.firstName();
     let lastName = faker.person.lastName();
     _users.push({
-      firstName,
-      lastName,
+      name: `${firstName} ${lastName}`,
       image: faker.internet.avatar(),
       email: faker.internet.email({
         firstName,
         lastName,
       }),
-      emailVerified: simpleFaker.datatype.boolean(),
+      emailVerified: simpleFaker.date.recent(),
     });
   }
   await db
@@ -71,9 +71,9 @@ const main = async (seed = null) => {
     for (let i = 0; i < count; i++) {
       _accounts.push({
         userId,
-        type: faker.company.buzzNoun(),
+        type: "oauth" as ProviderType,
         provider: faker.company.buzzPhrase(),
-        provideraccountid: faker.string.nanoid(10),
+        providerAccountId: faker.string.nanoid(10),
       });
     }
   }

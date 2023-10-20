@@ -1,9 +1,8 @@
 CREATE TABLE IF NOT EXISTS "account" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
+	"userId" uuid NOT NULL,
 	"type" text NOT NULL,
 	"provider" text NOT NULL,
-	"provideraccountid" text NOT NULL,
+	"providerAccountId" text NOT NULL,
 	"refresh_token" text,
 	"access_token" text,
 	"expires_at" integer,
@@ -12,7 +11,8 @@ CREATE TABLE IF NOT EXISTS "account" (
 	"id_token" text,
 	"session_state" text,
 	"created_at" timestamp with time zone DEFAULT now(),
-	"updated_at" timestamp with time zone
+	"updated_at" timestamp with time zone,
+	CONSTRAINT account_provider_providerAccountId PRIMARY KEY("provider","providerAccountId")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "feed" (
@@ -41,18 +41,9 @@ CREATE TABLE IF NOT EXISTS "notification" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "session" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
-	"type" text NOT NULL,
-	"provider" text NOT NULL,
-	"provideraccountid" text NOT NULL,
-	"refresh_token" text,
-	"access_token" text,
-	"expires_at" integer,
-	"token_type" text,
-	"scope" text,
-	"id_token" text,
-	"session_state" text
+	"sessionToken" text PRIMARY KEY NOT NULL,
+	"userId" uuid NOT NULL,
+	"expires" timestamp NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "subscription" (
@@ -75,10 +66,9 @@ CREATE TABLE IF NOT EXISTS "template" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"first_name" text,
-	"last_name" text,
+	"name" text,
 	"email" text NOT NULL,
-	"email_verified" boolean,
+	"emailVerified" timestamp,
 	"image" text,
 	"created_at" timestamp with time zone DEFAULT now(),
 	"updated_at" timestamp with time zone
@@ -100,8 +90,15 @@ CREATE TABLE IF NOT EXISTS "user_template" (
 	CONSTRAINT user_template_user_id_template_id PRIMARY KEY("user_id","template_id")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "verificationToken" (
+	"identifier" text NOT NULL,
+	"token" text NOT NULL,
+	"expires" timestamp NOT NULL,
+	CONSTRAINT verificationToken_identifier_token PRIMARY KEY("identifier","token")
+);
+--> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "account" ADD CONSTRAINT "account_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -137,7 +134,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

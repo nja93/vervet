@@ -14,10 +14,12 @@
     "drizzle:seed": "pnpm run drizzle:migrate && node --loader esbuild-register/loader -r esbuild-register ./lib/db/seed.ts"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^0.3.4",
     "@next/env": "^13.5.6",
     "drizzle-orm": "^0.28.6",
     "drizzle-zod": "^0.5.1",
     "next": "13.5.6",
+    "next-auth": "^4.24.3",
     "pg": "^8.11.3",
     "react": "^18",
     "react-dom": "^18",
