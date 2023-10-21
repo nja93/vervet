@@ -71,7 +71,7 @@ const main = async (seed = null) => {
     for (let i = 0; i < count; i++) {
       _accounts.push({
         userId,
-        type: "oauth" as ProviderType,
+        type: "oauth" as "oauth",
         provider: faker.company.buzzPhrase(),
         providerAccountId: faker.string.nanoid(10),
       });
