@@ -32,7 +32,7 @@ const main = async (seed = null) => {
   console.log("Seeding database schema...(seed: " + faker.seed() + ")");
 
   const client = new Client({
-    connectionString: process.env.DATABASE_URL as string,
+    connectionString: process.env.DATABASE_URL!,
   });
 
   await client.connect().then(() => console.log("Client connected"));
@@ -140,7 +140,7 @@ const main = async (seed = null) => {
     let count = simpleFaker.number.int({ max: 3 });
 
     for (let i = 0; i < count; i++) {
-      let feedId = _feedIds.pop() as string;
+      let feedId = _feedIds.pop()!;
       _userFeeds.push({
         userId,
         feedId,
@@ -167,7 +167,7 @@ const main = async (seed = null) => {
     for (let i = 0; i < count; i++) {
       _userTemplates.push({
         userId,
-        templateId: templateIds.at(index) as string,
+        templateId: templateIds.at(index)!,
       });
       ++index;
     }
@@ -187,7 +187,7 @@ const main = async (seed = null) => {
     for (let i = 0; i < count; i++) {
       _feedTemplates.push({
         feedId,
-        templateId: templateIds.at(index) as string,
+        templateId: templateIds.at(index)!,
       });
       ++index;
     }

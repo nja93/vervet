@@ -25,9 +25,9 @@ export const users = pgTable("user", {
 
 export const user = users;
 
-export const userRelations = relations(user, ({ many }) => ({
-  accounts: many(account),
-}));
+// export const userRelations = relations(user, ({ many }) => ({
+//   accounts: many(account),
+// }));
 
 export const accounts = pgTable(
   "account",
@@ -58,12 +58,12 @@ export const accounts = pgTable(
 
 export const account = accounts;
 
-export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
-    fields: [account.userId],
-    references: [user.id],
-  }),
-}));
+// export const accountRelations = relations(account, ({ one }) => ({
+//   user: one(user, {
+//     fields: [account.userId],
+//     references: [user.id],
+//   }),
+// }));
 
 export const sessions = pgTable("session", {
   sessionToken: text("sessionToken").notNull().primaryKey(),
