@@ -35,3 +35,7 @@ yarn-error.log*
 next-env.d.ts
 
 certificates
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/drizzle/

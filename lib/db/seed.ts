@@ -1,23 +1,22 @@
+import * as schema from "@/lib/db/schema";
 import {
-  user,
   account,
   feed,
-  subscription,
+  feedTemplate,
   notification,
+  subscription,
   template,
+  user,
   userFeed,
   userTemplate,
-  feedTemplate,
 } from "@/lib/db/schema";
-import { faker, simpleFaker } from "@faker-js/faker";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Client } from "pg";
-import * as schema from "@/lib/db/schema";
-import { cwd, exit } from "node:process";
-import { loadEnvConfig } from "@next/env";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { TFeedTemplate, TUser, TUserFeed, TUserTemplate } from "@/lib/db/types";
-import type { ProviderType } from "next-auth/providers/index";
+import { faker, simpleFaker } from "@faker-js/faker";
+import { loadEnvConfig } from "@next/env";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { cwd, exit } from "node:process";
+import { Client } from "pg";
 
 loadEnvConfig(cwd());
 
@@ -91,7 +90,7 @@ const main = async (seed = null) => {
     for (let i = 0; i < count; i++) {
       _feeds.push({
         userId,
-        feedName: faker.company.buzzNoun(),
+        title: faker.company.buzzNoun(),
       });
     }
   }
@@ -122,8 +121,8 @@ const main = async (seed = null) => {
   let _templates = [];
   for (let i = 0; i < (feedIds.length + userIds.length) * 3; i++) {
     _templates.push({
-      templateName: faker.lorem.slug({ min: 1, max: 3 }),
-      templateContent: faker.lorem.sentence({ min: 3, max: 10 }),
+      name: faker.lorem.slug({ min: 1, max: 3 }),
+      content: faker.lorem.sentence({ min: 3, max: 10 }),
     });
   }
   await db
