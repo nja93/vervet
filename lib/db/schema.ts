@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   integer,
+  jsonb,
   pgTable,
   primaryKey,
   text,
@@ -118,11 +119,14 @@ export const feedRelations = relations(feed, ({ one, many }) => ({
 
 export const subscription = pgTable("subscription", {
   id: uuid("id").defaultRandom().primaryKey().notNull(),
+  endpoint: text("endpoint").unique().notNull(),
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  subscription: text("subscription").notNull(),
+  subscription: jsonb("subscription").notNull(),
   vendor: text("vendor"),
+  userAgent: text("user_agent"),
+  tags: jsonb("tags"),
   active: boolean("active").default(true),
   createdAt: timestamp("created_at", {
     withTimezone: true,

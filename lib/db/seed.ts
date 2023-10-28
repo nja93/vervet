@@ -106,6 +106,7 @@ const main = async (seed = null) => {
       userId,
       subscription: simpleFaker.string.hexadecimal({ length: 28 }),
       vendor: faker.company.buzzNoun(),
+      endpoint: faker.commerce.department(),
     });
   }
   await db

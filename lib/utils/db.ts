@@ -1,15 +1,13 @@
 import db from "@/lib/db";
-import { feed, user } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 export async function getCount(
-  model: string,
+  table: string,
   key: string = "",
   value: string = ""
 ) {
-  //   const count = await db.select({ count: sql<number>`count(*)` }).from(_model).where((key && value) ? eq(_model.[key], value));
-  const query = `select count(*) from "${model}" ${
-    key && value ? `where "${model}"."${key}" = '${value}'` : ""
+  const query = `select count(*) from "${table}" ${
+    key && value ? `where "${table}"."${key}" = '${value}'` : ""
   }`;
 
   const count = await db.execute(sql.raw(query));
