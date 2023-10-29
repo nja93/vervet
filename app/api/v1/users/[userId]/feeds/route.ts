@@ -1,8 +1,8 @@
 import db from "@/lib/db";
-import { feed, user } from "@/lib/db/schema";
+import { feed } from "@/lib/db/schema";
 import { getLimitOffset, resourceNotFound } from "@/lib/utils/api";
 import { getCount } from "@/lib/utils/db";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,6 +11,14 @@ export async function GET(
   { params }: { params: { userId: string } }
 ) {
   const { limit, offset } = getLimitOffset(req);
+
+  // Confirm user exists
+  const userExists = await getCount("user", "id", params.userId);
+
+  if (!userExists) {
+    return resourceNotFound("user", params.userId);
+  }
+
   const feeds = await db
     .select()
     .from(feed)
@@ -41,5 +49,5 @@ export async function POST(
 
   const res = await db.insert(feed).values(body).returning({ id: feed.id });
 
-  return NextResponse.json(res, { status: 201 });
+  return NextResponse.json(res[0], { status: 201 });
 }

@@ -1,8 +1,8 @@
 import db from "@/lib/db";
-import { feed, user, userFeed } from "@/lib/db/schema";
-import { getLimitOffset, resourceNotFound } from "@/lib/utils/api";
+import { userFeed } from "@/lib/db/schema";
+import { resourceNotFound } from "@/lib/utils/api";
 import { getCount } from "@/lib/utils/db";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -65,7 +65,7 @@ export async function DELETE(
         eq(userFeed.feedId, params.feedId)
       )
     )
-    .returning({ userId: userFeed.userId, feedId: userFeed.feedId });
+    .returning({ id: userFeed.feedId });
 
-  return NextResponse.json(res);
+  return NextResponse.json(res[0]);
 }

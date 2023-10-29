@@ -1,10 +1,22 @@
 import db from "@/lib/db";
 import { subscription } from "@/lib/db/schema";
-import { getLimitOffset } from "@/lib/utils/api";
-import webPush from "@/lib/utils/webPush";
-import { faker } from "@faker-js/faker";
+import {
+  getLimitOffset,
+  resourceDuplicate,
+  resourceNotFound,
+} from "@/lib/utils/api";
+import { getCount } from "@/lib/utils/db";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+
+type Subscription = {
+  endpoint: string;
+  expirationTime: string | null;
+  keys: {
+    auth: string;
+    p256dh: string;
+  };
+};
 
 export async function GET(
   req: NextRequest,
@@ -25,13 +37,25 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { userId: string } }
 ) {
-  const body = await req.json();
+  const body: Subscription = await req.json();
 
-  const notification = {
-    title: faker.company.name(),
-    body: faker.company.catchPhraseDescriptor(),
-    icon: "https://www.vervet.info/vercel.svg",
-  };
+  // Confirm user exists
+  const userExists = await getCount("user", "id", params.userId);
+
+  if (!userExists) {
+    return resourceNotFound("user", params.userId);
+  }
+
+  // Confirm subscription not unique
+  const subscriptionExists = await getCount(
+    "subscription",
+    "endpoint",
+    body.endpoint
+  );
+
+  if (subscriptionExists) {
+    return resourceDuplicate("subscription", "endpoint", body.endpoint);
+  }
 
   // Insert subscription to db
   const _subscription = await db
@@ -44,7 +68,5 @@ export async function POST(
     })
     .returning({ id: subscription.id, endpoint: subscription.endpoint });
 
-  webPush.sendNotification(body, JSON.stringify(notification));
-
-  return NextResponse.json(notification, { status: 201 });
+  return NextResponse.json(_subscription[0], { status: 201 });
 }

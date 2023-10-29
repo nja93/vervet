@@ -10,14 +10,19 @@ const WebNotifications = () => {
   const [serviceWorker, setServiceWorker] =
     useState<ServiceWorkerRegistration>();
   const [subscription, setSubscription] = useState<PushSubscriptionJSON>();
+  const [disabled, setDisabled] = useState(false);
   const session = useSession();
 
   const check = () => {
     if (!("serviceWorker" in navigator)) {
-      throw new Error("No Service Worker support!");
+      setDisabled(true);
+      console.error("No Service Worker support!");
+      // throw new Error("No Service Worker support!");
     }
     if (!("PushManager" in window)) {
-      throw new Error("No Push API Support!");
+      setDisabled(true);
+      console.error("No Push API support!");
+      // throw new Error("No Push API Support!");
     }
   };
 
@@ -51,20 +56,18 @@ const WebNotifications = () => {
   };
 
   useEffect(() => {
-    setNotificationPermission(window.Notification.permission);
-    check();
-    registerServiceWorker()
-      .then((sw) => {
-        return sw.pushManager.getSubscription();
-      })
-      .then((sub) => {
-        setSubscription(sub?.toJSON() ?? undefined);
-      });
+    if (window !== undefined) {
+      setNotificationPermission(window.Notification.permission);
+      check();
+      registerServiceWorker()
+        .then((sw) => {
+          return sw.pushManager.getSubscription();
+        })
+        .then((sub) => {
+          setSubscription(sub?.toJSON() ?? undefined);
+        });
+    }
   }, []);
-
-  useEffect(() => {
-    console.log("session", session);
-  }, [session]);
 
   const sendSubscription = async () => {
     const requestHeaders: HeadersInit = new Headers();
@@ -80,6 +83,28 @@ const WebNotifications = () => {
     //   console.log("response", json);
     // });
   };
+
+  if (disabled) {
+    return (
+      <div className="alert">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          className="stroke-info shrink-0 w-6 h-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+
+        <span>Your browser does not support sending notifications</span>
+      </div>
+    );
+  }
 
   if (notificationPermission === "granted" || !notificationPermission) {
     return (

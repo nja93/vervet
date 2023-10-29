@@ -27,7 +27,9 @@ export async function PUT(
   { params }: { params: { feedId: string } }
 ) {
   let body = { ...(await req.json()) };
-  const validator = createInsertSchema(feed).safeParse(body);
+  const validator = createInsertSchema(feed)
+    .omit({ userId: true })
+    .safeParse(body);
 
   if (validator.success === false) {
     return NextResponse.json(validator.error, { status: 400 });
@@ -46,24 +48,14 @@ export async function PUT(
     .where(eq(feed.id, params.feedId))
     .returning({ id: feed.id });
 
-  return NextResponse.json(res);
+  return NextResponse.json(res[0]);
 }
 
 export async function DELETE(
   req: NextRequest,
   { params }: { params: { feedId: string } }
 ) {
-  let body = { ...(await req.json()) };
-  const validator = createInsertSchema(feed).safeParse({
-    ...body,
-    feedId: params.feedId,
-  });
-
-  if (validator.success === false) {
-    return NextResponse.json(validator.error, { status: 400 });
-  }
-
-  // Confirm user exists
+  2; // Confirm user exists
   const feedExists = await getCount("feed", "id", params.feedId);
 
   if (!feedExists) {
@@ -76,5 +68,5 @@ export async function DELETE(
     .where(eq(feed.id, params.feedId))
     .returning({ id: feed.id });
 
-  return NextResponse.json(res);
+  return NextResponse.json(res[0]);
 }
