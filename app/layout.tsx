@@ -4,6 +4,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Provider from "@/app/components/Provider";
 import { auth } from "@/lib/utils/authOptions";
+import NavBar from "@/app/components/NavBar";
+import { classNames } from "@/lib/utils/app";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,11 +20,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="h-full bg-white ">
+      <body
+        className={classNames(
+          inter.className,
+          "h-full text-gray-800 dark:text-gray-200 dark:bg-base-100"
+        )}
+      >
         <Provider session={await auth()}>
-          <WebNotifications />
-          {children}
+          <NavBar>
+            <WebNotifications />
+            {children}
+          </NavBar>
         </Provider>
       </body>
     </html>

@@ -63,6 +63,6 @@ export default defineConfig({
   webServer: {
     command: "pnpm run dev:http",
     url: "http://127.0.0.1:3000",
-    reuseExistingServer: !parseInt(process.env.CI!),
+    reuseExistingServer: true,
   },
 });

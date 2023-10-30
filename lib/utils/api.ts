@@ -5,7 +5,7 @@ export const getLimitOffset = (req: NextRequest) => ({
   offset: Number(req.nextUrl.searchParams.get("offset")),
 });
 
-export const resourceNotFound = (model: string, id: string) =>
+export const resourceNotFound = (model: string, id: string | undefined) =>
   NextResponse.json(
     {
       error: `Could not find ${model}`,

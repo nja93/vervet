@@ -1,7 +1,4 @@
-import db from "@/lib/db";
-import { userFeed } from "@/lib/db/schema";
 import { getCount } from "@/lib/utils/db";
-import { eq, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -13,7 +10,9 @@ export async function GET(
   //   .from(userFeed)
   //   .where(eq(userFeed.userId, params.userId));
 
-  const count = await getCount("feed", "user_id", params.userId);
+  const count = await getCount("feed", "user_id", params.userId, {
+    active: true,
+  });
 
   return NextResponse.json({ count, __class__: "feed" });
 }

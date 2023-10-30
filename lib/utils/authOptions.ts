@@ -8,24 +8,6 @@ import type {
 import { getServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-type ISODateString = string;
-export interface DefaultSession {
-  user?: {
-    id?: string | null;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  };
-  expires: ISODateString;
-}
-
-export interface User {
-  id: string;
-  name?: string | null;
-  email?: string | null;
-  image?: string | null;
-}
-
 export const config = {
   adapter: DrizzleAdapter(db),
 
@@ -37,8 +19,8 @@ export const config = {
   ],
 
   callbacks: {
-    async session({ session, user }: { session: DefaultSession; user: User }) {
-      if (session.user) {
+    async session({ session, user }: { session: any; user: any }) {
+      if (session?.user) {
         session.user.id = user.id;
       }
 
@@ -48,11 +30,11 @@ export const config = {
 };
 
 // Use it in server contexts
-export function auth(
+export const auth = (
   ...args:
     | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]
     | [NextApiRequest, NextApiResponse]
     | []
-) {
+) => {
   return getServerSession(...args, config);
-}
+};

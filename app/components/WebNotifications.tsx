@@ -107,13 +107,7 @@ const WebNotifications = () => {
   }
 
   if (notificationPermission === "granted" || !notificationPermission) {
-    return (
-      <div className="flex justify-center">
-        <button className="btn btn-primary" onClick={() => sendSubscription()}>
-          Send Notificaton
-        </button>
-      </div>
-    );
+    return <></>;
   }
 
   return (
