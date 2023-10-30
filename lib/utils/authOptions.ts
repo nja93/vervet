@@ -8,13 +8,23 @@ import type {
 import { getServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-import type { DefaultSession, User } from "@auth/core/types";
-
-type Session = DefaultSession & {
+type ISODateString = string;
+export interface DefaultSession {
   user?: {
     id?: string | null;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
   };
-};
+  expires: ISODateString;
+}
+
+export interface User {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
 
 export const config = {
   adapter: DrizzleAdapter(db),
@@ -27,7 +37,7 @@ export const config = {
   ],
 
   callbacks: {
-    async session({ session, user }: { session: Session; user: User }) {
+    async session({ session, user }: { session: DefaultSession; user: User }) {
       if (session.user) {
         session.user.id = user.id;
       }
