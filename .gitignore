@@ -39,3 +39,5 @@ certificates
 /playwright-report/
 /playwright/.cache/
 /drizzle/
+
+.vscode/

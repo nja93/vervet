@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export const getLimitOffset = (req: NextRequest) => ({
@@ -26,3 +27,15 @@ export const resourceDuplicate = (
     },
     { status: 400, statusText: "Resource already exists" }
   );
+
+export const tokenHeader = () => {
+  const cookieStore = cookies(); // Get cookies object
+
+  const token = cookieStore
+    .getAll()
+    .find((cookie) => cookie.name.includes("session-token"))?.value;
+
+  const requestHeaders = new Headers();
+  requestHeaders.set("Authorization", `Bearer ${token}`);
+  return requestHeaders;
+};

@@ -8,9 +8,7 @@ const config: Config = {
   ],
   theme: {},
   plugins: [require("daisyui"), require("@tailwindcss/forms")],
-  daisyUi: {
-    themes: ["winter", "night"],
-  },
-  darkMode: ["class", '[data-theme="night"]'],
+
+  darkMode: ["class", '[data-theme="dark"]'],
 };
 export default config;

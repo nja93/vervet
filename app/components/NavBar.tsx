@@ -5,6 +5,7 @@ import {
   ArrowRightIcon,
   Bars3Icon,
   BellIcon,
+  BellSlashIcon,
   ChevronDownIcon,
   DocumentTextIcon,
   HomeIcon,
@@ -19,9 +20,12 @@ import {
 import { Fragment, ReactNode, useEffect, useState } from "react";
 
 import { classNames } from "@/lib/utils/app";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { themeChange } from "theme-change";
+import Notifications from "@/app/components/Notifications";
+
+type Permission = "granted" | "default" | "denied" | undefined;
 
 const navigation = [
   { name: "Home", href: "/", icon: HomeIcon, current: true },
@@ -42,19 +46,44 @@ const navigation = [
 
 const userNavigation = [
   { name: "Profile", href: "/profile" },
-  { name: "Sign out", href: "/api/auth/signout" },
+  // {
+  //   name: "Sign out",
+  //   href: "/api/auth/signout'",
+  // },
 ];
 
 export default function NavBar({ children }: { children: ReactNode }) {
   const session = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [theme, setTheme] = useState("winter");
+  const [theme, setTheme] = useState("light");
+
+  const [subscription, setSubscription] = useState<PushSubscriptionJSON>();
+  const [disabled, setDisabled] = useState(false);
+
+  const check = () => {
+    if (!("serviceWorker" in navigator)) {
+      setDisabled(true);
+      console.error("No Service Worker support!");
+      // throw new Error("No Service Worker support!");
+    }
+    if (!("PushManager" in window)) {
+      setDisabled(true);
+      console.error("No Push API support!");
+      // throw new Error("No Push API Support!");
+    }
+  };
+
+  const sendSubscription = async () => {
+    await fetch(`${process.env.NEXT_PUBLIC_API_PATH}/user/subscriptions`, {
+      method: "POST",
+
+      body: JSON.stringify(subscription),
+    });
+  };
 
   useEffect(() => {
-    themeChange(false);
-    setTheme(localStorage.getItem("theme") ?? "winter");
-
-    // 👆 false parameter is required for react project
+    themeChange(false); // 👆 false parameter is required for react project
+    setTheme(localStorage.getItem("theme") ?? "light");
   }, []);
 
   useEffect(() => {
@@ -64,7 +93,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(theme === "night" ? "winter" : "night");
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -175,6 +204,24 @@ export default function NavBar({ children }: { children: ReactNode }) {
                           </Link>
                         </li>
                       )}
+                      {session.status == "unauthenticated" && (
+                        <li className="mt-auto">
+                          <Link href="/signin">
+                            <span className="flex lg:hidden font-semibold leading-6  ">
+                              <span
+                                className="ml-4 text-sm "
+                                // aria-hidden="true"
+                              >
+                                Sign in
+                              </span>
+                              <ArrowRightIcon
+                                className="ml-2 h-5 w-5 "
+                                // aria-hidden="true"
+                              />
+                            </span>
+                          </Link>
+                        </li>
+                      )}
                     </ul>
                   </nav>
                 </div>
@@ -263,37 +310,36 @@ export default function NavBar({ children }: { children: ReactNode }) {
               aria-hidden="true"
             />
 
-            <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <form className="relative flex flex-1 " action="#" method="GET">
-                <label htmlFor="search-field" className="sr-only ">
-                  Search
-                </label>
-                <MagnifyingGlassIcon
-                  className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 "
-                  aria-hidden="true"
-                />
-                <input
-                  id="search-field"
-                  className="block h-full w-full border-0 py-0 pl-8 pr-0  placeholder: focus:ring-0 sm:text-sm dark:bg-base-100"
-                  placeholder="Search..."
-                  type="search"
-                  name="search"
-                />
-              </form>
+            <div className="flex justify-end flex-1 gap-x-4 self-stretch lg:gap-x-6">
+              {session.status == "authenticated" && (
+                <form className="relative flex flex-1 " action="#" method="GET">
+                  <label htmlFor="search-field" className="sr-only ">
+                    Search
+                  </label>
+                  <MagnifyingGlassIcon
+                    className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 "
+                    aria-hidden="true"
+                  />
+                  <input
+                    id="search-field"
+                    className="block h-full w-full border-0 py-0 pl-8 pr-0  placeholder: focus:ring-0 sm:text-sm dark:bg-base-100"
+                    placeholder="Search..."
+                    type="search"
+                    name="search"
+                  />
+                </form>
+              )}
 
               <div className="flex items-center gap-x-4 lg:gap-x-6">
-                <button type="button" className="-m-2.5 p-2.5  hover:">
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+                {session.status === "authenticated" && <Notifications />}
 
                 <label className="swap swap-rotate ">
                   <input
                     type="checkbox"
-                    data-toggle-theme="winter,night"
+                    data-toggle-theme="light,dark"
                     data-act-class="swap-active"
                     className="hidden"
-                    defaultChecked={theme === "night"}
+                    defaultChecked={theme === "dark"}
                     onClick={toggleTheme}
                   />
 
@@ -301,7 +347,6 @@ export default function NavBar({ children }: { children: ReactNode }) {
 
                   <MoonIcon className={"swap-on fill-current w-6 h-6 hover:"} />
                 </label>
-
                 {/* Separator */}
                 <div
                   className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200"
@@ -356,12 +401,30 @@ export default function NavBar({ children }: { children: ReactNode }) {
                             )}
                           </Menu.Item>
                         ))}
+
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() =>
+                                signOut({
+                                  callbackUrl: "https://localhost:3000",
+                                })
+                              }
+                              className={classNames(
+                                active ? "bg-gray-50  dark:bg-gray-800" : "",
+                                "block px-3 py-1 text-sm leading-6 "
+                              )}
+                            >
+                              Sign Out
+                            </button>
+                          )}
+                        </Menu.Item>
                       </Menu.Items>
                     </Transition>
                   </Menu>
                 )}
                 {session.status === "unauthenticated" && (
-                  <Link href="/api/auth/signin">
+                  <Link href="/signin">
                     {" "}
                     <span className="hidden lg:flex lg:items-center font-semibold leading-6  ">
                       <span className="ml-4 text-sm " aria-hidden="true">

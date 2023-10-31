@@ -5,8 +5,10 @@ import type {
   NextApiRequest,
   NextApiResponse,
 } from "next";
-import { getServerSession } from "next-auth";
+import { NextAuthOptions, Session, getServerSession } from "next-auth";
+import { getToken } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
+import { NextRequest } from "next/server";
 
 export const config = {
   adapter: DrizzleAdapter(db),
@@ -18,16 +20,42 @@ export const config = {
     }),
   ],
 
+  session: {
+    strategy: "jwt",
+  },
+
+  pages: {
+    signIn: "/signin",
+  },
+
   callbacks: {
-    async session({ session, user }: { session: any; user: any }) {
-      if (session?.user) {
+    async session({
+      session,
+      token,
+      user,
+    }: {
+      session: any;
+      token: any;
+      user: any;
+    }) {
+      if (session?.user && token) {
+        session.user.id = token.sub;
+      }
+      if (session?.user && user) {
         session.user.id = user.id;
       }
-
       return session;
     },
+
+    async jwt({ user, token }: { user: any; token: any }) {
+      if (user) {
+        token.sub = user.id;
+      }
+
+      return token;
+    },
   },
-};
+} satisfies NextAuthOptions;
 
 // Use it in server contexts
 export const auth = (
@@ -35,6 +63,10 @@ export const auth = (
     | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]
     | [NextApiRequest, NextApiResponse]
     | []
-) => {
+): Promise<Session | null> => {
   return getServerSession(...args, config);
+};
+
+export const getUserToken = (req: NextRequest) => {
+  return getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 };

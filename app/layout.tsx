@@ -1,13 +1,14 @@
 import WebNotifications from "@/app/components/WebNotifications";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Raleway } from "next/font/google";
 import "./globals.css";
 import Provider from "@/app/components/Provider";
-import { auth } from "@/lib/utils/authOptions";
+2;
 import NavBar from "@/app/components/NavBar";
 import { classNames } from "@/lib/utils/app";
+import { getServerSession } from "next-auth";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Raleway({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,6 +20,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession();
   return (
     <html lang="en" className="h-full bg-white ">
       <body
@@ -27,9 +29,9 @@ export default async function RootLayout({
           "h-full text-gray-800 dark:text-gray-200 dark:bg-base-100"
         )}
       >
-        <Provider session={await auth()}>
+        <Provider session={session}>
           <NavBar>
-            <WebNotifications />
+            {/* <WebNotifications /> */}
             {children}
           </NavBar>
         </Provider>
