@@ -4,7 +4,7 @@ import { TFeed } from "@/lib/db/types";
 import { API_URL, USER_ID, FAKE_ID } from "./defaults";
 
 test.describe("Feed API Testing", () => {
-  const data: Omit<TFeed, "userId"> = {
+  const data: Omit<TFeed, "id"> = {
     title: faker.company.buzzNoun(),
   };
 

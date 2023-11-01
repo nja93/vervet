@@ -1,10 +1,6 @@
 import { canSendRequest } from "@/app/api/config/limiter";
 import db from "@/lib/db";
-import { feed } from "@/lib/db/schema";
 import { getLimitOffset } from "@/lib/utils/api";
-import { getToken } from "next-auth/jwt";
-
-import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -14,12 +10,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(null, { status: 429 });
   }
 
-  const feed_many = await db
-    .select()
-    .from(feed)
-    .where(eq(feed.active, true))
-    .limit(limit)
-    .offset(offset);
+  const feed_many = await db.query.feed.findMany({
+    columns: {
+      id: true,
+      title: true,
+    },
+
+    where: (fields, { eq }) => eq(fields.active, true),
+    limit: limit,
+    offset: offset,
+  });
 
   return NextResponse.json(feed_many);
 }

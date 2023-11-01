@@ -4,10 +4,7 @@ import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
   ArrowRightIcon,
   Bars3Icon,
-  BellIcon,
-  BellSlashIcon,
   ChevronDownIcon,
-  DocumentTextIcon,
   HomeIcon,
   MagnifyingGlassIcon,
   MegaphoneIcon,
@@ -19,77 +16,49 @@ import {
 } from "@heroicons/react/24/outline";
 import { Fragment, ReactNode, useEffect, useState } from "react";
 
+import Notifications from "@/app/components/Notifications";
 import { classNames } from "@/lib/utils/app";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { themeChange } from "theme-change";
-import Notifications from "@/app/components/Notifications";
-
-type Permission = "granted" | "default" | "denied" | undefined;
-
-const navigation = [
-  { name: "Home", href: "/", icon: HomeIcon, current: true },
-  { name: "Feeds", href: "feeds", icon: MegaphoneIcon, current: false },
-  {
-    name: "Subscriptons",
-    href: "/subscriptions",
-    icon: NewspaperIcon,
-    current: false,
-  },
-  {
-    name: "Templates",
-    href: "/templates",
-    icon: DocumentTextIcon,
-    current: false,
-  },
-];
-
-const userNavigation = [
-  { name: "Profile", href: "/profile" },
-  // {
-  //   name: "Sign out",
-  //   href: "/api/auth/signout'",
-  // },
-];
 
 export default function NavBar({ children }: { children: ReactNode }) {
   const session = useSession();
+  const path = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState<string>();
 
-  const [subscription, setSubscription] = useState<PushSubscriptionJSON>();
-  const [disabled, setDisabled] = useState(false);
+  const navigation = [
+    { name: "Home", href: "/", icon: HomeIcon, current: path === "/" },
+    {
+      name: "Feeds",
+      href: "/feeds",
+      icon: MegaphoneIcon,
+      current: path.startsWith("/feeds"),
+    },
+    {
+      name: "Subscriptions",
+      href: "/subscriptions",
+      icon: NewspaperIcon,
+      current: path.startsWith("/subscriptions"),
+    },
+  ];
 
-  const check = () => {
-    if (!("serviceWorker" in navigator)) {
-      setDisabled(true);
-      console.error("No Service Worker support!");
-      // throw new Error("No Service Worker support!");
-    }
-    if (!("PushManager" in window)) {
-      setDisabled(true);
-      console.error("No Push API support!");
-      // throw new Error("No Push API Support!");
-    }
-  };
-
-  const sendSubscription = async () => {
-    await fetch(`${process.env.NEXT_PUBLIC_API_PATH}/user/subscriptions`, {
-      method: "POST",
-
-      body: JSON.stringify(subscription),
-    });
-  };
+  const userNavigation = [{ name: "Profile", href: "/profile" }];
 
   useEffect(() => {
     themeChange(false); // 👆 false parameter is required for react project
-    setTheme(localStorage.getItem("theme") ?? "light");
+    let localTheme = localStorage.getItem("theme") ?? "light";
+
+    setTheme(localTheme);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("theme", theme);
-    // const localTheme = localStorage.getItem("theme");
-    document.querySelector("html")?.setAttribute("data-theme", theme);
+    if (theme) {
+      localStorage.setItem("theme", theme);
+      document.querySelector("html")?.setAttribute("data-theme", theme);
+    }
   }, [theme]);
 
   const toggleTheme = () => {
@@ -212,7 +181,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
                                 className="ml-4 text-sm "
                                 // aria-hidden="true"
                               >
-                                Sign in
+                                Log In
                               </span>
                               <ArrowRightIcon
                                 className="ml-2 h-5 w-5 "
@@ -428,7 +397,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
                     {" "}
                     <span className="hidden lg:flex lg:items-center font-semibold leading-6  ">
                       <span className="ml-4 text-sm " aria-hidden="true">
-                        Sign in
+                        Log In
                       </span>
                       <ArrowRightIcon
                         className="ml-2 h-5 w-5 "

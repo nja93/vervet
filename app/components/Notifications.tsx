@@ -1,4 +1,5 @@
 "use client";
+import { HTMLModalElement } from "@/types";
 import { BellIcon, BellSlashIcon } from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -8,10 +9,6 @@ interface Props {
 }
 
 type Permission = "granted" | "default" | "denied" | undefined;
-
-type HTMLModalElement = HTMLElement & {
-  showModal: () => void;
-};
 
 const Notifications = () => {
   const session = useSession();
@@ -56,7 +53,7 @@ const Notifications = () => {
   useEffect(() => {
     const sendSubscription = async () => {
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_PATH}/users/${userId}/subscriptions`,
+        `/${process.env.NEXT_PUBLIC_API_PATH}/users/${userId}/subscriptions`,
         {
           method: "POST",
           body: JSON.stringify(subscription),
@@ -91,7 +88,7 @@ const Notifications = () => {
 
   const registerServiceWorker = async () => {
     const swRegistration = await navigator.serviceWorker.register(
-      "vervet-sw.js"
+      "/vervet-sw.js"
     );
     setServiceWorker(swRegistration);
     return swRegistration;

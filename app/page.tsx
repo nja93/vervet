@@ -1,7 +1,4 @@
-type TFeed = {
-  id: string;
-  title: string;
-};
+import { TFeed } from "@/lib/db/types";
 
 export default async function Home() {
   const res = await fetch(

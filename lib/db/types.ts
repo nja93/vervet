@@ -1,6 +1,7 @@
 import {
   feed,
   feedTemplate,
+  template,
   user,
   userFeed,
   userTemplate,
@@ -29,7 +30,10 @@ export type Only<T, U> = {
 export type Either<T, U> = Only<T, U> | Only<U, T>;
 
 export type TUser = Omit<OptionalNullable<typeof user.$inferSelect>, "id">;
-export type TFeed = Omit<OptionalNullable<typeof feed.$inferSelect>, "id">;
+export type TFeed = OptionalNullable<typeof feed.$inferSelect> & {
+  userFeeds?: { [key: string]: string }[];
+};
+export type TTemplate = OptionalNullable<typeof template.$inferSelect>;
 export type TUserFeed = OptionalNullable<typeof userFeed.$inferSelect>;
 export type TUserTemplate = OptionalNullable<typeof userTemplate.$inferSelect>;
 export type TFeedTemplate = OptionalNullable<typeof feedTemplate.$inferSelect>;

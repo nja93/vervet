@@ -23,13 +23,24 @@ export async function GET(req: NextRequest) {
     return resourceNotFound("user", userId);
   }
 
-  const feeds = await db
-    .select()
-    .from(feed)
-    .where(and(eq(feed.userId, userId), eq(feed.active, true)))
-    .limit(limit)
-    .offset(offset);
+  const feeds = await db.query.feed.findMany({
+    columns: {
+      id: true,
+      title: true,
+    },
+    with: {
+      userFeeds: {
+        columns: {
+          userId: true,
+        },
+      },
+    },
 
+    where: (fields, { eq, and }) =>
+      and(eq(feed.userId, userId), eq(fields.active, true)),
+    limit: limit,
+    offset: offset,
+  });
   return NextResponse.json(feeds);
 }
 

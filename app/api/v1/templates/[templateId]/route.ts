@@ -1,8 +1,9 @@
 import db from "@/lib/db";
-import { feedTemplate, userTemplate } from "@/lib/db/schema";
+import { feedTemplate, template, userTemplate } from "@/lib/db/schema";
 import { resourceNotFound } from "@/lib/utils/api";
 import { getCount } from "@/lib/utils/db";
 import { eq } from "drizzle-orm";
+import { createInsertSchema } from "drizzle-zod";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -17,6 +18,37 @@ export async function GET(
     return resourceNotFound("template", params.templateId);
   }
   return NextResponse.json(template_one);
+}
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { templateId: string } }
+) {
+  const body = await req.json();
+
+  const validator = createInsertSchema(template)
+    .omit({ id: true })
+    .safeParse(body);
+
+  if (validator.success === false) {
+    return NextResponse.json(validator.error, { status: 400 });
+  }
+
+  // Confirm template exists
+  const templateExists = await getCount("template", "id", params.templateId);
+
+  if (!templateExists) {
+    return resourceNotFound("template", params.templateId);
+  }
+
+  const res = await db
+    .update(template)
+    .set({ ...body })
+    .where(eq(template.id, params.templateId))
+    .returning({ id: template.id });
+
+  console.log("res is", res);
+  return NextResponse.json(res[0]);
 }
 
 export async function DELETE(

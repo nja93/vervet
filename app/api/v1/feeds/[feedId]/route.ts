@@ -11,8 +11,7 @@ export async function GET(
   { params }: { params: { feedId: string } }
 ) {
   const feed_one = await db.query.feed.findFirst({
-    where: (feed, { eq }) =>
-      and(eq(feed.id, params.feedId), eq(feed.active, true)),
+    where: (feed, { eq }) => and(eq(feed.id, params.feedId)),
   });
 
   if (!feed_one) {

@@ -1,24 +1,20 @@
 "use client";
 
+import { classNames } from "@/lib/utils/app";
 import {
   ArrowLongLeftIcon,
   ArrowLongRightIcon,
 } from "@heroicons/react/20/solid";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Props {
   pages: number[];
   currentPage: number;
-  previous: string;
-  next: string;
+  path: string;
 }
 
-export default function Pagination({
-  pages,
-  currentPage,
-  previous,
-  next,
-}: Props) {
+export default function Pagination({ pages, currentPage, path }: Props) {
   const [_pages, setPages] = useState<string[]>([]);
 
   useEffect(() => {
@@ -36,7 +32,7 @@ export default function Pagination({
     } else if (pages.length - currentPage < 5) {
       surroundCurrent.push(`${pages.at(0)}`);
       surroundCurrent.push("...");
-      for (let i = currentPage; i <= pages.at(-1)!; i++) {
+      for (let i = currentPage; i < pages.at(-1)!; i++) {
         surroundCurrent.push(`${i}`);
       }
       surroundCurrent.push(`${pages.at(-1)}`);
@@ -45,7 +41,7 @@ export default function Pagination({
       surroundCurrent.push("...");
       surroundCurrent.push(`${currentPage - 1}`);
       surroundCurrent.push(`${currentPage}`);
-      surroundCurrent.push(`${currentPage + 2}`);
+      surroundCurrent.push(`${currentPage + 1}`);
       surroundCurrent.push("...");
       surroundCurrent.push(`${pages.at(-1)}`);
     }
@@ -56,41 +52,48 @@ export default function Pagination({
   return (
     <nav className="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
       <div className="-mt-px flex w-0 flex-1">
-        <a
-          href="#"
-          className="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+        <Link
+          href={`${path}?page=${currentPage > 1 ? currentPage - 1 : 1}`}
+          className={classNames(
+            "inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium  hover:border-gray-300 hover:text-gray-300 disabled:cursor-not-allowed",
+            currentPage === 1 ? "cursor-not-allowed" : ""
+          )}
         >
-          <ArrowLongLeftIcon
-            className="mr-3 h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
+          <ArrowLongLeftIcon className="mr-3 h-5 w-5 " aria-hidden="true" />
           Previous
-        </a>
+        </Link>
       </div>
       <div className="hidden md:-mt-px md:flex">
         {_pages.map((page) => {
           return (
-            <a
+            <Link
               key={`pagination-${page}`}
-              href="#"
-              className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              href={page === "..." ? "#" : `${path}?page=${page}`}
+              className={classNames(
+                "inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium  hover:border-gray-300 hover:text-gray-300",
+                page === `${currentPage}`
+                  ? "border-indigo-500 text-indigo-600"
+                  : ""
+              )}
             >
               {page}
-            </a>
+            </Link>
           );
         })}
       </div>
       <div className="-mt-px flex w-0 flex-1 justify-end">
-        <a
-          href="#"
-          className="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+        <Link
+          href={`${path}?page=${
+            currentPage < pages.length ? currentPage + 1 : pages.length
+          }`}
+          className={classNames(
+            "inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-300 disabled:cursor-not-allowed",
+            currentPage === pages.length ? "cursor-not-allowed" : ""
+          )}
         >
           Next
-          <ArrowLongRightIcon
-            className="ml-3 h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
-        </a>
+          <ArrowLongRightIcon className="ml-3 h-5 w-5 " aria-hidden="true" />
+        </Link>
       </div>
     </nav>
   );

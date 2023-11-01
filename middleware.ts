@@ -6,7 +6,6 @@ export default async function middleware(req: NextRequest) {
   const authorized = await getToken({ req, secret });
 
   if (!authorized) {
-    // console.log("Not authorized", req.url);
     if (req.url.includes("/api")) {
       return NextResponse.json(
         { error: "Unauthorized access" },
@@ -17,7 +16,7 @@ export default async function middleware(req: NextRequest) {
     url.pathname = "/signin";
     return NextResponse.redirect(url);
   }
-  //   console.log("Authorized", req.url);
+
   return NextResponse.next();
 }
 
