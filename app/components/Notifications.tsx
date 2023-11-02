@@ -11,67 +11,17 @@ interface Props {
 type Permission = "granted" | "default" | "denied" | undefined;
 
 const Notifications = () => {
-  const session = useSession();
-  const userId = session.data?.user.id;
   const [notificationPermission, setNotificationPermission] =
     useState<Permission>();
-  const [serviceWorker, setServiceWorker] =
-    useState<ServiceWorkerRegistration>();
-  const [subscription, setSubscription] = useState<PushSubscriptionJSON>();
   const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     if (window !== undefined) {
       setNotificationPermission(window.Notification.permission);
       check();
+      registerServiceWorker();
     }
   }, []);
-
-  useEffect(() => {
-    const main = async () => {
-      if (window.Notification.permission === "granted") {
-        return;
-      }
-
-      check();
-      const serviceWorker = await registerServiceWorker();
-      const permission = await requestNotificationPermission();
-      if (permission === "granted") {
-        const _subscription = await serviceWorker.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: process.env.NEXT_PUBLIC_VAPID_KEY!,
-        });
-        setSubscription(_subscription ?? undefined);
-      }
-    };
-
-    if (userId && notificationPermission === "granted") {
-      main();
-    }
-  }, [notificationPermission, userId]);
-
-  useEffect(() => {
-    const sendSubscription = async () => {
-      await fetch(
-        `/${process.env.NEXT_PUBLIC_API_PATH}/users/${userId}/subscriptions`,
-        {
-          method: "POST",
-          body: JSON.stringify(subscription),
-        }
-      ).then((res) => {
-        if (res.status !== 201) {
-          setSubscription(undefined);
-          setNotificationPermission("default");
-          console.log("failed, reverting to default");
-        } else {
-          console.log("subscription", subscription);
-        }
-      });
-    };
-    if (userId && subscription) {
-      sendSubscription();
-    }
-  }, [userId, subscription]);
 
   const check = () => {
     if (!("serviceWorker" in navigator)) {
@@ -86,21 +36,72 @@ const Notifications = () => {
     }
   };
 
-  const registerServiceWorker = async () => {
-    const swRegistration = await navigator.serviceWorker.register(
-      "/vervet-sw.js"
-    );
-    setServiceWorker(swRegistration);
-    return swRegistration;
-  };
-
-  const requestNotificationPermission = async () => {
-    if (window.Notification.permission !== "granted") {
-      const permission = await window.Notification.requestPermission();
-      setNotificationPermission(permission);
+  function registerServiceWorker() {
+    if (!("serviceWorker" in navigator)) {
+      return;
     }
-    return window.Notification.permission;
-  };
+    return navigator.serviceWorker
+      .register("/vervet-sw.js")
+      .then(function (registration) {
+        console.log("Service worker successfully registered.");
+        // setServiceWorker(registration);
+        return registration;
+      })
+      .catch(function (err) {
+        console.error("Unable to register service worker.", err);
+      });
+  }
+
+  function askPermission() {
+    if (!("PushManager" in window)) {
+      return;
+    }
+    return new Promise(function (resolve, reject) {
+      const permissionResult = window.Notification.requestPermission(function (
+        result
+      ) {
+        resolve(result);
+      });
+
+      if (permissionResult) {
+        permissionResult.then(resolve, reject);
+      }
+    }).then(function (permissionResult) {
+      setNotificationPermission(permissionResult as Permission);
+      if (permissionResult === "granted") {
+        subscribeUserToPush();
+      }
+    });
+  }
+
+  function subscribeUserToPush() {
+    return navigator.serviceWorker
+      .register("/vervet-sw.js")
+      .then(function (registration) {
+        const subscribeOptions = {
+          userVisibleOnly: true,
+          applicationServerKey: process.env.NEXT_PUBLIC_VAPID_KEY!,
+        };
+
+        return registration.pushManager.subscribe(subscribeOptions);
+      })
+      .then(function (pushSubscription) {
+        sendSubscriptionToBackEnd(pushSubscription);
+        return pushSubscription;
+      });
+  }
+
+  function sendSubscriptionToBackEnd(subscription: PushSubscription) {
+    return fetch(`/${process.env.NEXT_PUBLIC_API_PATH}/user/subscriptions`, {
+      method: "POST",
+      body: JSON.stringify(subscription),
+    }).then((res) => {
+      if (res.status !== 201) {
+        setNotificationPermission("default");
+        console.log("failed, reverting to default");
+      }
+    });
+  }
 
   if (disabled) {
     return (
@@ -165,7 +166,7 @@ const Notifications = () => {
                   <button className="btn btn-sm">Later</button>
                   <button
                     className="btn btn-sm btn-primary"
-                    onClick={() => setNotificationPermission("granted")}
+                    onClick={() => askPermission()}
                   >
                     Accept
                   </button>
