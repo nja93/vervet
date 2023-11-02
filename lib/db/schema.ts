@@ -114,7 +114,7 @@ export const feedRelations = relations(feed, ({ one, many }) => ({
     fields: [feed.userId],
     references: [user.id],
   }),
-  userFeed: many(userFeed),
+  userFeeds: many(userFeed),
 }));
 
 export const subscription = pgTable("subscription", {

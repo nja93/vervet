@@ -11,9 +11,14 @@ export async function GET(
   const { limit, offset } = getLimitOffset(req);
 
   const subscription_many = await db
-    .select({ id: subscription.id, userId: subscription.userId })
+    .select({
+      id: subscription.id,
+      userId: subscription.userId,
+      subscription: subscription.subscription,
+      endpoint: subscription.endpoint,
+    })
     .from(userFeed)
-    .leftJoin(subscription, eq(subscription.id, userFeed.userId))
+    .leftJoin(subscription, eq(subscription.userId, userFeed.userId))
     .where(eq(userFeed.feedId, params.feedId))
     .limit(limit)
     .offset(offset);

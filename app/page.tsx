@@ -1,7 +1,7 @@
 export default function Home() {
- return (
-  <main>
-   This is a test
-  </main>
- );
+  return (
+    <main>
+      Welcome to Vervet Alerts
+    </main>
+  )
 }
