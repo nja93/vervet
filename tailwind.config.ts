@@ -12,5 +12,7 @@ const config: Config = {
     themes: ["winter", "night"],
   },
   darkMode: ["class", '[data-theme="night"]'],
+
 };
-export default config;
+module.exports = config;
+

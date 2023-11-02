@@ -21,7 +21,7 @@ import { Fragment, ReactNode, useEffect, useState } from "react";
 import { classNames } from "@/lib/utils/app";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { themeChange } from "theme-change";
+import { themeChange } from "theme-change"
 
 const navigation = [
   { name: "Home", href: "/", icon: HomeIcon, current: true },
