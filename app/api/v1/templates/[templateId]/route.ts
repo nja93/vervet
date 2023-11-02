@@ -47,7 +47,6 @@ export async function PUT(
     .where(eq(template.id, params.templateId))
     .returning({ id: template.id });
 
-  console.log("res is", res);
   return NextResponse.json(res[0]);
 }
 

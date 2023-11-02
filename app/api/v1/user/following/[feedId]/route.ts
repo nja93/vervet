@@ -7,6 +7,28 @@ import { and, eq } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { NextRequest, NextResponse } from "next/server";
 
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { feedId: string } }
+) {
+  const token = await getUserToken(req);
+  const userId = token?.sub;
+
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized Access" }, { status: 404 });
+  }
+  const feed = await db.query.userFeed.findFirst({
+    where: (userFeed, { eq, and }) =>
+      and(eq(userFeed.userId, userId), eq(userFeed.feedId, params.feedId)),
+  });
+
+  if (feed) {
+    return NextResponse.json(feed);
+  } else {
+    return NextResponse.json({});
+  }
+}
+
 // Follow
 export async function POST(
   req: NextRequest,

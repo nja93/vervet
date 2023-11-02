@@ -9,7 +9,5 @@ export async function GET(
     active: true,
   });
 
-  console.log("server", count);
-
   return NextResponse.json({ count, __class__: "feed" });
 }

@@ -11,6 +11,7 @@ import {
   MoonIcon,
   NewspaperIcon,
   SunIcon,
+  UserCircleIcon,
   UserIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
@@ -20,14 +21,28 @@ import Notifications from "@/app/components/Notifications";
 import { classNames } from "@/lib/utils/app";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { ProgressLoader } from "nextjs-progressloader";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { themeChange } from "theme-change";
 
 export default function NavBar({ children }: { children: ReactNode }) {
   const session = useSession();
   const path = usePathname();
+  const { push } = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [theme, setTheme] = useState<string>();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm({
+    reValidateMode: "onSubmit",
+  });
+
+  const onSearch: SubmitHandler<FieldValues> = (data: FieldValues) => {
+    push(`/search?query=${data.search}`);
+  };
 
   const navigation = [
     { name: "Home", href: "/", icon: HomeIcon, current: path === "/" },
@@ -43,9 +58,18 @@ export default function NavBar({ children }: { children: ReactNode }) {
       icon: NewspaperIcon,
       current: path.startsWith("/subscriptions"),
     },
+    {
+      name: "Channels",
+      href: "/channels",
+      icon: UserCircleIcon,
+      current: path.startsWith("/channels"),
+    },
   ];
 
-  const userNavigation = [{ name: "Profile", href: "/profile" }];
+  const userNavigation = [
+    { name: "My Feeds", href: "/myFeeds" },
+    { name: "Profile", href: "/profile" },
+  ];
 
   useEffect(() => {
     themeChange(false); // 👆 false parameter is required for react project
@@ -160,18 +184,32 @@ export default function NavBar({ children }: { children: ReactNode }) {
                       </li>
 
                       {session.status == "authenticated" && (
-                        <li className="mt-auto">
-                          <Link
-                            href="/profile"
-                            className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6  hover:bg-gray-50 hover:text-indigo-600"
-                          >
-                            <UserIcon
-                              className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
-                              aria-hidden="true"
-                            />
-                            Profile
-                          </Link>
-                        </li>
+                        <ul className="mt-auto">
+                          <li className="mt-auto">
+                            <Link
+                              href="/myFeeds"
+                              className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6  hover:bg-gray-50 hover:text-indigo-600"
+                            >
+                              <MegaphoneIcon
+                                className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
+                                aria-hidden="true"
+                              />
+                              My Feeds
+                            </Link>
+                          </li>
+                          <li className="mt-auto">
+                            <Link
+                              href="/profile"
+                              className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6  hover:bg-gray-50 hover:text-indigo-600"
+                            >
+                              <UserIcon
+                                className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
+                                aria-hidden="true"
+                              />
+                              Profile
+                            </Link>
+                          </li>
+                        </ul>
                       )}
                       {session.status == "unauthenticated" && (
                         <li className="mt-auto">
@@ -243,18 +281,32 @@ export default function NavBar({ children }: { children: ReactNode }) {
               </li>
 
               {session.status == "authenticated" && (
-                <li className="mt-auto">
-                  <Link
-                    href="/profile"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6  hover:bg-gray-50 hover:text-indigo-600"
-                  >
-                    <UserIcon
-                      className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
-                      aria-hidden="true"
-                    />
-                    Profile
-                  </Link>
-                </li>
+                <ul className="mt-auto">
+                  <li className="mt-auto">
+                    <Link
+                      href="/myFeeds"
+                      className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6  hover:bg-gray-50 hover:text-indigo-600"
+                    >
+                      <MegaphoneIcon
+                        className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
+                        aria-hidden="true"
+                      />
+                      My Feeds
+                    </Link>
+                  </li>
+                  <li className="mt-auto">
+                    <Link
+                      href="/profile"
+                      className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6  hover:bg-gray-50 hover:text-indigo-600"
+                    >
+                      <UserIcon
+                        className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
+                        aria-hidden="true"
+                      />
+                      Profile
+                    </Link>
+                  </li>
+                </ul>
               )}
             </ul>
           </nav>
@@ -281,7 +333,10 @@ export default function NavBar({ children }: { children: ReactNode }) {
 
             <div className="flex justify-end flex-1 gap-x-4 self-stretch lg:gap-x-6">
               {session.status == "authenticated" && (
-                <form className="relative flex flex-1 " action="#" method="GET">
+                <form
+                  className="relative flex flex-1 "
+                  onSubmit={handleSubmit(onSearch)}
+                >
                   <label htmlFor="search-field" className="sr-only ">
                     Search
                   </label>
@@ -289,12 +344,13 @@ export default function NavBar({ children }: { children: ReactNode }) {
                     className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 "
                     aria-hidden="true"
                   />
+
                   <input
                     id="search-field"
-                    className="block h-full w-full border-0 py-0 pl-8 pr-0  placeholder: focus:ring-0 sm:text-sm dark:bg-base-100"
+                    className="block h-full w-full border-0 py-0 pl-8 pr-0  placeholder: focus:ring-0 sm:text-sm dark:bg-base-100 border-1 "
                     placeholder="Search..."
+                    {...register("search")}
                     type="search"
-                    name="search"
                   />
                 </form>
               )}
@@ -416,6 +472,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
 
         <main className="py-10 dark:text-gray-200 dark:bg-base-100">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <ProgressLoader />
             {children}
           </div>
         </main>

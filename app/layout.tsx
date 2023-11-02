@@ -25,7 +25,7 @@ export default async function RootLayout({
       <body
         className={classNames(
           inter.className,
-          "h-full overflow-hidden text-gray-800 dark:text-gray-200 dark:bg-base-100"
+          "h-full  text-gray-800 dark:text-gray-200 dark:bg-base-100"
         )}
       >
         <Provider session={session}>

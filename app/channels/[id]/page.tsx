@@ -1,14 +1,15 @@
 import Pagination from "@/app/components/Pagination";
-import AddFeed, { AddFeedButton } from "@/app/components/feeds/AddFeed";
-import SubscribeAction from "@/app/feeds/SubscribeAction";
+import SubscribeAction from "@/app/channels/[id]/SubscribeAction";
 import { TFeed, TUserFeed } from "@/lib/db/types";
 import { tokenHeader } from "@/lib/utils/api";
+import React from "react";
+import Heading from "@/app/channels/[id]/Heading";
 
 type SearchParams = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export default async function MyFeeds({ searchParams }: SearchParams) {
+const ChannelFeeds = async ({ searchParams }: SearchParams) => {
   const requestHeaders = tokenHeader();
 
   const page =
@@ -17,7 +18,7 @@ export default async function MyFeeds({ searchParams }: SearchParams) {
     typeof searchParams.limit === "string" ? parseInt(searchParams.limit) : 10;
 
   const count = await fetch(
-    `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/feeds/count`,
+    `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/feeds/count`,
     {
       headers: requestHeaders,
     }
@@ -56,10 +57,7 @@ export default async function MyFeeds({ searchParams }: SearchParams) {
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 ">Feeds</h1>
-          <p className="mt-2 text-sm ">
-            Follow a field to get alerted on matters
-          </p>
+          <Heading />
         </div>
       </div>
       <div className="mt-8 flow-root">
@@ -118,4 +116,6 @@ export default async function MyFeeds({ searchParams }: SearchParams) {
       </div>
     </div>
   );
-}
+};
+
+export default ChannelFeeds;

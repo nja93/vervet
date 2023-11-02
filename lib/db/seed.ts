@@ -40,7 +40,7 @@ const main = async (seed = null) => {
   migrate(db, { migrationsFolder: "drizzle" });
 
   // Insert users (records = USER_COUNT)
-  let _users: TUser[] = [];
+  let _users: Omit<TUser, "id">[] = [];
   for (let i = 0; i < USER_COUNT; i++) {
     let firstName = faker.person.firstName();
     let lastName = faker.person.lastName();

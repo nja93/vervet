@@ -11,7 +11,7 @@ self.addEventListener("push", (event) => {
   const data = event.data.json();
   const options = {
     body: data.body,
-    icon: "vercel.svg",
+    icon: "vervet.svg",
   };
 
   event.waitUntil(self.registration.showNotification(data.title, options));

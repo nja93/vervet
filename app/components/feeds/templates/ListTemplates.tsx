@@ -89,27 +89,24 @@ const ListTemplates = ({
                   : template.content}
               </td>
               <td className="flex justify-center whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 gap-4 ">
-                <a
-                  href="#"
-                  className="text-indigo-600 hover:text-indigo-900"
+                <span
+                  className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
                   onClick={() => sendNotification(template.id)}
                 >
                   Send<span className="sr-only">, {template.name}</span>
-                </a>
-                <a
-                  href="#"
+                </span>
+                <span
                   className="text-indigo-600 hover:text-indigo-900"
                   onClick={() => setEditTemplate(template)}
                 >
                   Edit<span className="sr-only">, {template.name}</span>
-                </a>
-                <a
-                  href="#"
+                </span>
+                <span
                   className="text-red-600 hover:text-red-900"
                   onClick={() => deleteTemplate(template.id)}
                 >
                   Delete<span className="sr-only">, {template.name}</span>
-                </a>
+                </span>
               </td>
             </tr>
           ))}
@@ -121,7 +118,7 @@ const ListTemplates = ({
           (v, i) => i + 1
         )}
         currentPage={page}
-        path={`/feeds/${feed.id}/templates`}
+        path={`/myFeeds/${feed.id}/templates`}
       />
     </>
   );

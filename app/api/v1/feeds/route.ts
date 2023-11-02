@@ -15,6 +15,13 @@ export async function GET(req: NextRequest) {
       id: true,
       title: true,
     },
+    with: {
+      userFeeds: {
+        columns: {
+          userId: true,
+        },
+      },
+    },
 
     where: (fields, { eq }) => eq(fields.active, true),
     limit: limit,
