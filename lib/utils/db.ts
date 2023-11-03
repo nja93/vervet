@@ -11,7 +11,9 @@ export async function getCount(
     key && value ? `where "${table}"."${key}" = '${value}'` : ""
   }`;
   if (options?.active) {
-    query += ` and "${table}"."active" = true`;
+    query += ` ${key && value ? " and " : " where "} "${table}"."active" = ${
+      options?.active
+    }`;
   }
 
   const count = await db.execute(sql.raw(query));

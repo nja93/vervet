@@ -1,7 +1,6 @@
 import Pagination from "@/app/components/Pagination";
 import AddFeed, { AddFeedButton } from "@/app/components/feeds/AddFeed";
-import SubscribeAction from "@/app/feeds/SubscribeAction";
-import { TFeed, TUserFeed } from "@/lib/db/types";
+import { TFeed } from "@/lib/db/types";
 import { tokenHeader } from "@/lib/utils/api";
 
 type SearchParams = {
@@ -17,7 +16,7 @@ export default async function MyFeeds({ searchParams }: SearchParams) {
     typeof searchParams.limit === "string" ? parseInt(searchParams.limit) : 10;
 
   const count = await fetch(
-    `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/feeds/count`,
+    `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/feeds/count`,
     {
       headers: requestHeaders,
     }
@@ -28,29 +27,11 @@ export default async function MyFeeds({ searchParams }: SearchParams) {
   const feeds: TFeed[] = await fetch(
     `${process.env.NEXTAUTH_URL}/${
       process.env.NEXT_PUBLIC_API_PATH
-    }/feeds?limit=${limit}&offset=${(page - 1) * limit}`,
+    }/user/feeds?limit=${limit}&offset=${(page - 1) * limit}`,
     {
       headers: requestHeaders,
     }
   ).then((res) => res.json());
-
-  const subscriptions: { [key: string]: boolean } = (
-    await Promise.all(
-      feeds.map((feed) =>
-        fetch(
-          `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/following/${feed.id}`,
-          {
-            headers: requestHeaders,
-          }
-        ).then((res) => res.json())
-      )
-    )
-  ).reduce((acc, curr: TUserFeed) => {
-    if (Object.keys(curr).length) {
-      return { ...acc, [curr.feedId]: true };
-    }
-    return acc;
-  }, {});
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -58,8 +39,12 @@ export default async function MyFeeds({ searchParams }: SearchParams) {
         <div className="sm:flex-auto">
           <h1 className="text-base font-semibold leading-6 ">Feeds</h1>
           <p className="mt-2 text-sm ">
-            Follow a field to get alerted on matters
+            A list of all the active feeds you have created that users can
+            subscribe to with the current subscriber count.
           </p>
+        </div>
+        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <AddFeedButton />
         </div>
       </div>
       <div className="mt-8 flow-root">
@@ -96,10 +81,12 @@ export default async function MyFeeds({ searchParams }: SearchParams) {
                       {feed.userFeeds?.length}
                     </td>
                     <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                      <SubscribeAction
-                        feed={feed}
-                        subscriptions={subscriptions}
-                      />
+                      <a
+                        href={`/myFeeds/${feed.id}`}
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        Manage<span className="sr-only">, {feed.title}</span>
+                      </a>
                     </td>
                   </tr>
                 ))}
@@ -108,10 +95,10 @@ export default async function MyFeeds({ searchParams }: SearchParams) {
             <Pagination
               pages={Array.from(
                 { length: Math.ceil(count / limit) },
-                (v, i) => i
+                (v, i) => i + 1
               )}
               currentPage={page}
-              path="/feeds"
+              path="/myFeeds"
             />
           </div>
         </div>

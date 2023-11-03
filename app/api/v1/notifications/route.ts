@@ -44,7 +44,6 @@ export async function POST(req: NextRequest) {
           .delete(subscription)
           .where(eq(subscription.id, subId))
           .returning({ id: subscription.id });
-        return;
       } else {
         throw err;
       }
@@ -56,6 +55,11 @@ export async function POST(req: NextRequest) {
   });
 
   const res = await db
+    .insert(notification)
+    .values(body)
+    .returning({ id: notification.id });
+
+  const notificationChain = await db
     .select({
       id: subscription.id,
       userId: subscription.userId,
@@ -80,7 +84,21 @@ export async function POST(req: NextRequest) {
       }
 
       return promiseChain;
+    })
+    .then(() => {
+      return NextResponse.json(res[0], { status: 201 });
+    })
+    .catch(function (err) {
+      return NextResponse.json(
+        {
+          error: {
+            id: "unable-to-send-messages",
+            message: `We were unable to send messages to all subscriptions : '${err.message}'`,
+          },
+        },
+        { status: 500 }
+      );
     });
 
-  return NextResponse.json(res, { status: 201 });
+  return NextResponse.json(res[0], { status: 201 });
 }

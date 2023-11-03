@@ -21,8 +21,21 @@ export default async function RootLayout({
 }) {
   const session = await getServerSession();
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className="h-full bg-white ">
+      <body
+        className={classNames(
+          inter.className,
+          "h-full  text-gray-800 dark:text-gray-200 dark:bg-base-100"
+        )}
+      >
+        <Provider session={session}>
+          <NavBar>
+            {/* <WebNotifications /> */}
+            {children}
+          </NavBar>
+        </Provider>
+        <script>0</script>
+      </body>
     </html>
   )
 }

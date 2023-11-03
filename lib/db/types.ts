@@ -29,7 +29,7 @@ export type Only<T, U> = {
 
 export type Either<T, U> = Only<T, U> | Only<U, T>;
 
-export type TUser = Omit<OptionalNullable<typeof user.$inferSelect>, "id">;
+export type TUser = OptionalNullable<typeof user.$inferSelect>;
 export type TFeed = OptionalNullable<typeof feed.$inferSelect> & {
   userFeeds?: { [key: string]: string }[];
 };

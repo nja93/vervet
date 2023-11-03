@@ -33,7 +33,7 @@ const UpdateFeed = ({ feed }: { feed: TFeed }) => {
       }
     );
     if (res.status === 200) {
-      push("/feeds");
+      push("/myFeeds");
     } else {
       console.error("An error occured", res.statusText);
     }

@@ -1,9 +1,11 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
-const secret = process.env.NEXTAUTH_SECRET;
 export default async function middleware(req: NextRequest) {
-  const authorized = await getToken({ req, secret });
+  const authorized = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
   if (!authorized) {
     if (req.url.includes("/api")) {
@@ -21,5 +23,17 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/v1/:path*", "/feeds/:path*"],
+  matcher: [
+    "/api/v1/:users*",
+    "/api/v1/:user*",
+    "/api/v1/:notifications*",
+    "/api/v1/:subscriptions*",
+    "/api/v1/:templates*",
+    "/myFeeds/:path*",
+    "/feeds/:path*",
+    "/search/:path*",
+    "/channels/:path*",
+    "/profile/:path*",
+    "/subscriptions/:path*",
+  ],
 };

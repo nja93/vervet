@@ -13,13 +13,33 @@ export async function GET(req: NextRequest) {
   const { limit, offset } = getLimitOffset(req);
   const feeds = (
     await db.query.userFeed.findMany({
-      columns: {},
-      with: { feed: true },
+      with: {
+        user: {
+          columns: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+        feed: {
+          columns: {
+            title: true,
+            id: true,
+          },
+          with: {
+            userFeeds: {
+              columns: {
+                feedId: true,
+              },
+            },
+          },
+        },
+      },
       where: (userFeed, { eq }) => eq(userFeed.userId, userId),
       limit: limit,
       offset: offset,
     })
-  ).map((obj) => obj.feed);
+  ).map((obj) => obj);
 
   return NextResponse.json(feeds);
 }

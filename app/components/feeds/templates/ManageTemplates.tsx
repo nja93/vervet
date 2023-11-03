@@ -36,13 +36,13 @@ const ManageTemplates = ({
   const tabs = [
     {
       name: "Feed Details",
-      href: `/feeds/${feed.id}`,
+      href: `/myFeeds/${feed.id}`,
       icon: MegaphoneIcon,
       current: false,
     },
     {
       name: "Templates",
-      href: `/feeds/${feed.id}/templates`,
+      href: `/myFeeds/${feed.id}/templates`,
       icon: DocumentTextIcon,
       current: true,
     },
