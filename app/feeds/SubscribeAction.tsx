@@ -1,17 +1,22 @@
 "use client";
 import { TFeed } from "@/lib/db/types";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const SubscribeAction = ({
   feed,
   subscriptions,
 }: {
+  id?: string;
   feed: TFeed;
   subscriptions: { [key: string]: boolean };
 }) => {
   const [subscribed, setSubscribed] = useState<boolean>(subscriptions[feed.id]);
   const { refresh } = useRouter();
+
+  useEffect(() => {
+    setSubscribed(subscriptions[feed.id]);
+  }, [subscriptions, feed.id]);
 
   async function setSubscriptionState(method: "DELETE" | "POST") {
     const res = await fetch(

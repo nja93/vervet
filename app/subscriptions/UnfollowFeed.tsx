@@ -20,7 +20,7 @@ const UnfollowFeed = ({ userFeed }: { userFeed: TUserFeedExtended }) => {
       }
     );
     const json = await res.json();
-    if (res.status === 200) {
+    if (res.ok) {
       refresh();
     } else {
       console.error("An error occured", res.statusText);

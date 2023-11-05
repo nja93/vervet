@@ -3,7 +3,7 @@ import { notification, subscription, userFeed } from "@/lib/db/schema";
 import { resourceNotFound } from "@/lib/utils/api";
 import { getCount } from "@/lib/utils/db";
 import webPush from "@/lib/utils/webPush";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const body: { templateId: string; feedId: string } = await req.json();
   const validator = createInsertSchema(notification).safeParse(body);
+  let totalSubscribers = 0;
 
   if (validator.success === false) {
     return NextResponse.json(validator.error, { status: 400 });
@@ -29,9 +30,6 @@ export async function POST(req: NextRequest) {
   }
 
   // TODO: Confirm if template and feed belong to same user?
-
-  await db.insert(notification).values(body).returning({ id: notification.id });
-
   const triggerPushMsg = function (
     subId: string,
     sub: webPush.PushSubscription,
@@ -39,13 +37,11 @@ export async function POST(req: NextRequest) {
   ) {
     return webPush.sendNotification(sub, dataToSend).catch(async (err) => {
       if (err.statusCode === 404 || err.statusCode === 410) {
-        console.log("Subscription has expired or is no longer valid: ", err);
+        totalSubscribers -= 1;
         await db
           .delete(subscription)
           .where(eq(subscription.id, subId))
           .returning({ id: subscription.id });
-      } else {
-        throw err;
       }
     });
   };
@@ -54,10 +50,12 @@ export async function POST(req: NextRequest) {
     where: (template, { eq }) => eq(template.id, body.templateId),
   });
 
-  const res = await db
+  const notif = await db
     .insert(notification)
-    .values(body)
+    .values({ feedId: body.feedId, templateId: body.templateId })
     .returning({ id: notification.id });
+
+  const notificationId = notif[0].id;
 
   const notificationChain = await db
     .select({
@@ -67,25 +65,60 @@ export async function POST(req: NextRequest) {
     })
     .from(userFeed)
     .leftJoin(subscription, eq(subscription.userId, userFeed.userId))
-    .where(eq(userFeed.feedId, body.feedId))
+    .where(and(eq(userFeed.feedId, body.feedId), eq(userFeed.active, true)))
     .then(function (subscriptions) {
-      let promiseChain =
-        Promise.resolve() as Promise<void | webPush.SendResult>;
+      // let stats = { requested: subscriptions.length, delievered: 0 };
+      totalSubscribers = subscriptions.length;
+      Promise.resolve() as Promise<void | webPush.SendResult>;
+
       let dataToSend = JSON.stringify({
+        id: notificationId,
         title: template_one?.name,
         body: template_one?.content,
+        renotify: template_one?.renotify,
+        requireInteraction: template_one?.requireInteraction,
+        actions: [
+          {
+            action: "positive-action",
+            title: template_one?.positiveAction || "👍 Yay",
+            type: "button",
+          },
+          {
+            action: "negative-action",
+            title: template_one?.negativeAction || "👎 Nay",
+            type: "button",
+          },
+          {
+            action: "dismiss-action",
+            title: template_one?.dismissAction || "Ignore",
+            type: "button",
+          },
+        ],
       });
 
-      for (let i = 0; i < subscriptions.length; i++) {
-        const sub = subscriptions[i].subscription as webPush.PushSubscription;
-        promiseChain = promiseChain.then(() => {
-          return triggerPushMsg(subscriptions[i].id!, sub, dataToSend);
-        });
-      }
-
-      return promiseChain;
+      return Promise.all<void | webPush.SendResult>(
+        subscriptions.map(async (sub) =>
+          triggerPushMsg(
+            sub.id!,
+            sub.subscription as webPush.PushSubscription,
+            dataToSend
+          )
+        )
+      );
     })
-    .then(() => {
+    .then(async (results) => {
+      const stats = {
+        requested: totalSubscribers,
+        delivered: results.filter((result) => result?.statusCode === 201)
+          .length,
+      };
+
+      const res = await db
+        .update(notification)
+        .set(stats)
+        .where(eq(notification.id, notificationId))
+        .returning({ id: notification.id });
+
       return NextResponse.json(res[0], { status: 201 });
     })
     .catch(function (err) {
@@ -100,5 +133,5 @@ export async function POST(req: NextRequest) {
       );
     });
 
-  return NextResponse.json(res[0], { status: 201 });
+  return NextResponse.json({}, { status: 201 });
 }

@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
         columns: {
           feedId: true,
         },
+        where: (userFeed, { eq }) => eq(userFeed.active, true),
       },
       user: {
         columns: {
@@ -46,16 +47,16 @@ export async function GET(req: NextRequest) {
         image: true,
       },
       with: {
-        userFeeds: {
+        feeds: {
           columns: {
-            feedId: true,
+            id: true,
           },
-          limit: 5,
+          where: (feed, { eq }) => eq(feed.active, true),
         },
       },
       where: (user, { ilike }) => ilike(user.name, `%${query}%`),
     })
-  ).filter((user) => user.userFeeds.length);
+  ).filter((user) => user.feeds.length);
 
   return NextResponse.json({ users, feeds });
 }

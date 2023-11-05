@@ -54,7 +54,7 @@ const main = async (seed = null) => {
       emailVerified: simpleFaker.date.recent(),
     });
   }
-  await db
+  const user_table = await db
     .insert(user)
     .values(_users)
     .then(() => console.log(`Seeded user...(${_users.length} records)`));
@@ -77,7 +77,7 @@ const main = async (seed = null) => {
     }
   }
 
-  await db
+  const account_table = await db
     .insert(account)
     .values(_accounts)
     .then(() => console.log(`Seeded account...(${_accounts.length} records)`));
@@ -94,7 +94,7 @@ const main = async (seed = null) => {
       });
     }
   }
-  await db
+  const feed_table = await db
     .insert(feed)
     .values(_feeds)
     .then(() => console.log(`Seeded feed...(${_feeds.length} records)`));
@@ -109,7 +109,7 @@ const main = async (seed = null) => {
       endpoint: faker.string.sample(),
     });
   }
-  await db
+  const subscription_table = await db
     .insert(subscription)
     .values(_subs)
     .then(() => console.log(`Seeded subscription...(${_subs.length} records)`));
@@ -126,7 +126,8 @@ const main = async (seed = null) => {
       content: faker.lorem.sentence({ min: 3, max: 10 }),
     });
   }
-  await db
+
+  const template_table = await db
     .insert(template)
     .values(_templates)
     .then(() =>
@@ -134,7 +135,7 @@ const main = async (seed = null) => {
     );
 
   // Subscribe user (to 0-3 feeds) (feed subscriber)
-  let _userFeeds: TUserFeed[] = [];
+  let _userFeeds: Omit<TUserFeed, "id">[] = [];
   let _feedIds = [...feedIds];
   for (let userId of userIds) {
     let count = simpleFaker.number.int({ max: 3 });
@@ -147,7 +148,7 @@ const main = async (seed = null) => {
       });
     }
   }
-  await db
+  const user_feed_table = await db
     .insert(userFeed)
     .values(_userFeeds)
     .then(() =>
@@ -172,7 +173,7 @@ const main = async (seed = null) => {
       ++index;
     }
   }
-  await db
+  const user_template_table = await db
     .insert(userTemplate)
     .values(_userTemplates)
     .then(() =>
@@ -192,7 +193,7 @@ const main = async (seed = null) => {
       ++index;
     }
   }
-  await db
+  const feed_template_table = await db
     .insert(feedTemplate)
     .values(_feedTemplates)
     .then(() =>
@@ -216,19 +217,28 @@ const main = async (seed = null) => {
       _notifs.push({
         feedId: feedTemplateId.feedId,
         templateId: feedTemplateId.templateId,
-        sent: simpleFaker.datatype.boolean(),
       });
     }
   }
-  await db
+  const notification_table = await db
     .insert(notification)
     .values(_notifs)
     .then(() =>
       console.log(`Seeded notification...(${_notifs.length} records)`)
     );
+
+  return Promise.all([
+    user_table,
+    feed_table,
+    subscription_table,
+    template_table,
+    user_feed_table,
+    user_template_table,
+    feed_template_table,
+    notification_table,
+  ]);
 };
 
 main().then(() => {
   console.log("Schema seeded successfully");
-  exit(0);
 });

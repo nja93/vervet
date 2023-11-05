@@ -113,7 +113,6 @@ export default async function MySubscriptions({ searchParams }: SearchParams) {
                           <img
                             className="h-8 w-8 rounded-full bg-gray-50"
                             src={userFeed.user.image ?? undefined}
-                            alt={userFeed.user?.name}
                           />
                           <span className="hidden lg:flex lg:items-center">
                             <span

@@ -1,6 +1,7 @@
 import db from "@/lib/db";
 import { feed } from "@/lib/db/schema";
 import { resourceNotFound } from "@/lib/utils/api";
+import { getUserToken } from "@/lib/utils/authOptions";
 import { getCount } from "@/lib/utils/db";
 import { and, eq } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -25,6 +26,9 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: { feedId: string } }
 ) {
+  const token = await getUserToken(req);
+  const userId = token?.sub;
+
   let body = { ...(await req.json()) };
   const validator = createInsertSchema(feed)
     .omit({ userId: true })
@@ -44,7 +48,7 @@ export async function PUT(
   const res = await db
     .update(feed)
     .set({ ...body })
-    .where(eq(feed.id, params.feedId))
+    .where(and(eq(feed.userId, userId!), eq(feed.id, params.feedId)))
     .returning({ id: feed.id });
 
   return NextResponse.json(res[0]);
@@ -54,7 +58,10 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { feedId: string } }
 ) {
-  2; // Confirm user exists
+  const token = await getUserToken(req);
+  const userId = token?.sub;
+
+  // Confirm user exists
   const feedExists = await getCount("feed", "id", params.feedId);
 
   if (!feedExists) {
@@ -64,7 +71,7 @@ export async function DELETE(
   const res = await db
     .update(feed)
     .set({ active: false })
-    .where(eq(feed.id, params.feedId))
+    .where(and(eq(feed.userId, userId!), eq(feed.id, params.feedId)))
     .returning({ id: feed.id });
 
   return NextResponse.json(res[0]);

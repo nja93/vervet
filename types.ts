@@ -7,3 +7,8 @@ export type FeedPageTabs =
   | "templates"
   | "notifications"
   | undefined;
+
+export type APIError = {
+  error: string;
+  data: any;
+};

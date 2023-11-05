@@ -1,7 +1,7 @@
 "use client";
 import { TFeed } from "@/lib/db/types";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 
 const SubscribeAction = ({
   feed,

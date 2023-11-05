@@ -14,15 +14,16 @@ export async function GET(req: NextRequest) {
     columns: {
       id: true,
       title: true,
+      userId: true,
     },
     with: {
       userFeeds: {
         columns: {
-          userId: true,
+          active: true,
         },
+        where: (fields, { eq }) => eq(fields.active, true),
       },
     },
-
     where: (fields, { eq }) => eq(fields.active, true),
     limit: limit,
     offset: offset,

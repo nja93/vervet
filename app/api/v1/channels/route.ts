@@ -29,7 +29,9 @@ export async function GET(req: NextRequest) {
       limit: limit,
       offset: offset,
     })
-  ).filter((user) => user.feeds.length);
+  )
+    .filter((user) => user.feeds.length)
+    .slice(offset, limit ? offset + limit : undefined);
 
   return NextResponse.json(user_many);
 }
