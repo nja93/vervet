@@ -111,7 +111,7 @@ const FeedSearchResults = ({
                             <img
                               className="h-8 w-8 rounded-full bg-gray-50"
                               src={feed.user.image ?? undefined}
-                              alt={feed.user?.name}
+                              
                             />
                             <span className="hidden lg:flex lg:items-center">
                               <span

@@ -19,15 +19,23 @@ const Channels = async ({ searchParams }: SearchParams) => {
   const limit =
     typeof searchParams.limit === "string" ? parseInt(searchParams.limit) : 10;
 
-  let channels: TUserWithUserFeeds[] = await fetch(
-    `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/channels`,
+  const count = await fetch(
+    `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/channels/count`,
+    {
+      headers: requestHeaders,
+    }
+  )
+    .then((res) => res.json())
+    .then((json) => json.count);
+
+  const channels: TUserWithUserFeeds[] = await fetch(
+    `${process.env.NEXTAUTH_URL}/${
+      process.env.NEXT_PUBLIC_API_PATH
+    }/channels?limit=${limit}&offset=${(page - 1) * limit}`,
     {
       headers: requestHeaders,
     }
   ).then((res) => res.json());
-  const count = channels.length;
-
-  channels = channels.slice((page - 1) * limit, (page - 1) * limit + limit);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -65,7 +73,6 @@ const Channels = async ({ searchParams }: SearchParams) => {
                         <img
                           className="h-8 w-8 rounded-full bg-gray-50"
                           src={channel.image ?? undefined}
-                          alt={channel?.name ?? undefined}
                         />
                         <span className="hidden lg:flex lg:items-center">
                           <Link

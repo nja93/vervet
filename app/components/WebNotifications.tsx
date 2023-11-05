@@ -73,7 +73,7 @@ const WebNotifications = () => {
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set("Content-Type", "application/json");
 
-    await fetch(`${process.env.NEXT_PUBLIC_API_PATH}/users/id/subscriptions`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_PATH}/user/subscriptions`, {
       method: "POST",
       headers: requestHeaders,
       body: JSON.stringify(subscription),

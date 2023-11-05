@@ -1,6 +1,7 @@
 import {
   feed,
   feedTemplate,
+  notification,
   template,
   user,
   userFeed,
@@ -35,5 +36,6 @@ export type TFeed = OptionalNullable<typeof feed.$inferSelect> & {
 };
 export type TTemplate = OptionalNullable<typeof template.$inferSelect>;
 export type TUserFeed = OptionalNullable<typeof userFeed.$inferSelect>;
+export type TNotification = OptionalNullable<typeof notification.$inferSelect>;
 export type TUserTemplate = OptionalNullable<typeof userTemplate.$inferSelect>;
 export type TFeedTemplate = OptionalNullable<typeof feedTemplate.$inferSelect>;

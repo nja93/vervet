@@ -6,7 +6,6 @@ type UserSearch = TUser & {
 };
 
 const UserSearchResults = ({ results }: { results: UserSearch[] }) => {
-  console.log("User search results", results);
   return (
     <div>
       <h2 className="text-xl">User Search Results</h2>

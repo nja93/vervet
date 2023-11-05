@@ -1,5 +1,4 @@
 import Pagination from "@/app/components/Pagination";
-import AddFeed, { AddFeedButton } from "@/app/components/feeds/AddFeed";
 import SubscribeAction from "@/app/feeds/SubscribeAction";
 import { TFeed, TUserFeed } from "@/lib/db/types";
 import { tokenHeader } from "@/lib/utils/api";

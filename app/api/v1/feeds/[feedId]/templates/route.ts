@@ -13,7 +13,11 @@ export async function GET(
       with: {
         template: true,
       },
-      where: (feedTemplate, { eq }) => eq(feedTemplate.feedId, params.feedId),
+      where: (feedTemplate, { eq, and }) =>
+        and(
+          eq(feedTemplate.active, true),
+          eq(feedTemplate.feedId, params.feedId)
+        ),
       limit: limit,
       offset: offset,
     })

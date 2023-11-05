@@ -19,7 +19,11 @@ export async function GET(
   }
   const feed = await db.query.userFeed.findFirst({
     where: (userFeed, { eq, and }) =>
-      and(eq(userFeed.userId, userId), eq(userFeed.feedId, params.feedId)),
+      and(
+        eq(userFeed.userId, userId),
+        eq(userFeed.feedId, params.feedId),
+        eq(userFeed.active, true)
+      ),
   });
 
   if (feed) {
@@ -63,7 +67,7 @@ export async function POST(
 
   const res = await db
     .insert(userFeed)
-    .values({ ...body })
+    .values(body)
     .returning({ userId: userFeed.userId, feedId: userFeed.feedId });
 
   return NextResponse.json(res, { status: 201 });
@@ -93,7 +97,8 @@ export async function DELETE(
   }
 
   const res = await db
-    .delete(userFeed)
+    .update(userFeed)
+    .set({ active: false, inactiveDate: new Date().toISOString() })
     .where(and(eq(userFeed.userId, userId), eq(userFeed.feedId, params.feedId)))
     .returning({ id: userFeed.feedId });
 

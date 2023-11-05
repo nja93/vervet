@@ -4,6 +4,7 @@ import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
   ArrowRightIcon,
   Bars3Icon,
+  ChatBubbleLeftEllipsisIcon,
   ChevronDownIcon,
   HomeIcon,
   MagnifyingGlassIcon,
@@ -64,12 +65,15 @@ export default function NavBar({ children }: { children: ReactNode }) {
       icon: UserCircleIcon,
       current: path.startsWith("/channels"),
     },
+    {
+      name: "Notifications",
+      href: "/notifications",
+      icon: ChatBubbleLeftEllipsisIcon,
+      current: path.startsWith("/notifications"),
+    },
   ];
 
-  const userNavigation = [
-    { name: "My Feeds", href: "/myFeeds" },
-    { name: "Profile", href: "/profile" },
-  ];
+  const userNavigation = [{ name: "Profile", href: "/profile" }];
 
   useEffect(() => {
     themeChange(false); // 👆 false parameter is required for react project
@@ -158,7 +162,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
                         <ul role="list" className="-mx-2 space-y-1">
                           {navigation.map((item) => (
                             <li key={item.name}>
-                              <a
+                              <Link
                                 href={item.href}
                                 className={classNames(
                                   item.current
@@ -177,7 +181,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
                                   aria-hidden="true"
                                 />
                                 {item.name}
-                              </a>
+                              </Link>
                             </li>
                           ))}
                         </ul>
@@ -200,7 +204,12 @@ export default function NavBar({ children }: { children: ReactNode }) {
                           <li className="mt-auto">
                             <Link
                               href="/profile"
-                              className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6  hover:bg-gray-50 hover:text-indigo-600"
+                              className={classNames(
+                                path.startsWith("/profile")
+                                  ? "bg-gray-50 text-indigo-600"
+                                  : " hover:text-indigo-600 hover:bg-gray-50",
+                                "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                              )}
                             >
                               <UserIcon
                                 className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
@@ -255,7 +264,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
                 <ul role="list" className="-mx-2 space-y-1">
                   {navigation.map((item) => (
                     <li key={item.name}>
-                      <a
+                      <Link
                         href={item.href}
                         className={classNames(
                           item.current
@@ -274,7 +283,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
                           aria-hidden="true"
                         />
                         {item.name}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -284,20 +293,13 @@ export default function NavBar({ children }: { children: ReactNode }) {
                 <ul className="mt-auto">
                   <li className="mt-auto">
                     <Link
-                      href="/myFeeds"
-                      className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6  hover:bg-gray-50 hover:text-indigo-600"
-                    >
-                      <MegaphoneIcon
-                        className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
-                        aria-hidden="true"
-                      />
-                      My Feeds
-                    </Link>
-                  </li>
-                  <li className="mt-auto">
-                    <Link
                       href="/profile"
-                      className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6  hover:bg-gray-50 hover:text-indigo-600"
+                      className={classNames(
+                        path.startsWith("/profile")
+                          ? "bg-gray-50 text-indigo-600"
+                          : " hover:text-indigo-600 hover:bg-gray-50",
+                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                      )}
                     >
                       <UserIcon
                         className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
@@ -451,7 +453,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
                 {session.status === "unauthenticated" && (
                   <Link href="/signin">
                     {" "}
-                    <span className="hidden lg:flex lg:items-center font-semibold leading-6  ">
+                    <span className="flex lg:flex lg:items-center font-semibold leading-6  ">
                       <span className="ml-4 text-sm " aria-hidden="true">
                         Log In
                       </span>

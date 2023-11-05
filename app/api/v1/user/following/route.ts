@@ -35,7 +35,8 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      where: (userFeed, { eq }) => eq(userFeed.userId, userId),
+      where: (userFeed, { eq, and }) =>
+        and(eq(userFeed.userId, userId), eq(userFeed.active, true)),
       limit: limit,
       offset: offset,
     })
