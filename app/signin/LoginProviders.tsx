@@ -19,7 +19,9 @@ const LoginProviders = ({ providers }: Props) => {
           <button
             className="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
             onClick={() =>
-              signIn(provider.id, { callbackUrl: "https://localhost:3000" })
+              signIn(provider.id, {
+                callbackUrl: "https://localhost:3000/home",
+              })
             }
           >
             <div className="flex gap-1 items-center">

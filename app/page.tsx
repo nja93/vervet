@@ -1,7 +1,18 @@
-export default function Home() {
+import CTA from "@/app/CTA";
+import Features from "@/app/Features";
+import Hero from "@/app/Hero";
+import { NextPage } from "next";
+
+import React from "react";
+
+const Landing: NextPage = () => {
   return (
-    <main>
-      Welcome to Vervet Alerts
-    </main>
-  )
-}
+    <div>
+      <Hero />
+      <Features />
+      <CTA />
+    </div>
+  );
+};
+
+export default Landing;

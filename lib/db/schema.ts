@@ -1,5 +1,7 @@
 import { relations } from "drizzle-orm";
+
 import {
+  bigint,
   boolean,
   integer,
   jsonb,
@@ -31,7 +33,6 @@ export const userRelations = relations(user, ({ many }) => ({
   feeds: many(feed),
   userTemplates: many(userTemplate),
   userFeeds: many(userFeed),
-  notifications: many(userNotification),
 }));
 
 export const account = pgTable(
@@ -115,6 +116,8 @@ export const feedRelations = relations(feed, ({ one, many }) => ({
     references: [user.id],
   }),
   userFeeds: many(userFeed),
+  notifications: many(notification),
+  feedTemplates: many(feedTemplate),
 }));
 
 export const subscription = pgTable("subscription", {
@@ -150,7 +153,15 @@ export const notification = pgTable("notification", {
   templateId: uuid("template_id")
     .notNull()
     .references(() => template.id, { onDelete: "cascade" }),
-  sent: boolean("sent").default(false),
+  requested: bigint("requested", { mode: "number" }),
+  delivered: bigint("delivered", { mode: "number" }).default(0),
+  responses: bigint("responses", { mode: "number" }).default(0),
+  positiveResponses: bigint("positive_responses", { mode: "number" }).default(
+    0
+  ),
+  negativeResponses: bigint("negative_responses", { mode: "number" }).default(
+    0
+  ),
   createdAt: timestamp("created_at", {
     withTimezone: true,
     mode: "string",
@@ -169,12 +180,11 @@ export const notificationRelations = relations(
       fields: [notification.templateId],
       references: [template.id],
     }),
-    savedNotifications: many(userNotification),
   })
 );
 
-export const userNotification = pgTable(
-  "user_notification",
+export const notificationReplies = pgTable(
+  "notification_replies",
   {
     userId: uuid("user_id")
       .notNull()
@@ -182,6 +192,7 @@ export const userNotification = pgTable(
     notificationId: uuid("template_id")
       .notNull()
       .references(() => notification.id, { onDelete: "cascade" }),
+
     createdAt: timestamp("created_at", {
       withTimezone: true,
       mode: "string",
@@ -195,24 +206,15 @@ export const userNotification = pgTable(
   }
 );
 
-export const userNotificationRelations = relations(
-  userNotification,
-  ({ one }) => ({
-    user: one(user, {
-      fields: [userNotification.userId],
-      references: [user.id],
-    }),
-    notification: one(notification, {
-      fields: [userNotification.notificationId],
-      references: [notification.id],
-    }),
-  })
-);
-
 export const template = pgTable("template", {
   id: uuid("id").defaultRandom().primaryKey().notNull(),
   name: text("name").notNull(),
   content: text("content").notNull(),
+  requireInteraction: boolean("require_interaction").default(false),
+  renotify: boolean("renotify").default(false),
+  positiveAction: text("positive_action"),
+  negativeAction: text("negative_action"),
+  dismissAction: text("dismiss_action"),
   active: boolean("active").default(true),
   createdAt: timestamp("created_at", {
     withTimezone: true,
@@ -221,29 +223,38 @@ export const template = pgTable("template", {
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }),
 });
 
-export const userFeed = pgTable(
-  "user_feed",
-  {
-    userId: uuid("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    feedId: uuid("feed_id")
-      .notNull()
-      .references(() => feed.id, { onDelete: "cascade" }),
-    createdAt: timestamp("created_at", {
-      withTimezone: true,
-      mode: "string",
-    }).defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }),
-  },
-  (table) => {
-    return {
-      userFeedPkey: primaryKey(table.userId, table.feedId),
-    };
-  }
-);
+export const templateRelations = relations(template, ({ many, one }) => ({
+  user: one(userTemplate, {
+    fields: [template.id],
+    references: [userTemplate.templateId],
+  }),
+  feed: one(feedTemplate, {
+    fields: [template.id],
+    references: [feedTemplate.templateId],
+  }),
+}));
 
-export const userFeedRelations = relations(userFeed, ({ one }) => ({
+export const userFeed = pgTable("user_feed", {
+  id: uuid("id").defaultRandom().primaryKey().notNull(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  feedId: uuid("feed_id")
+    .notNull()
+    .references(() => feed.id, { onDelete: "cascade" }),
+  active: boolean("active").default(true),
+  inactiveDate: timestamp("inactive_date", {
+    withTimezone: true,
+    mode: "string",
+  }),
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "string",
+  }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }),
+});
+
+export const userFeedRelations = relations(userFeed, ({ one, many }) => ({
   user: one(user, {
     fields: [userFeed.userId],
     references: [user.id],
@@ -263,6 +274,7 @@ export const userTemplate = pgTable(
     templateId: uuid("template_id")
       .notNull()
       .references(() => template.id, { onDelete: "cascade" }),
+    active: boolean("active").default(true),
     createdAt: timestamp("created_at", {
       withTimezone: true,
       mode: "string",
@@ -278,7 +290,7 @@ export const userTemplate = pgTable(
 
 export const userTemplateRelations = relations(userTemplate, ({ one }) => ({
   user: one(user, {
-    fields: [userTemplate.templateId],
+    fields: [userTemplate.userId],
     references: [user.id],
   }),
   template: one(template, {
@@ -296,6 +308,7 @@ export const feedTemplate = pgTable(
     templateId: uuid("template_id")
       .notNull()
       .references(() => template.id, { onDelete: "cascade" }),
+    active: boolean("active").default(true),
     createdAt: timestamp("created_at", {
       withTimezone: true,
       mode: "string",
@@ -311,7 +324,7 @@ export const feedTemplate = pgTable(
 
 export const feedTemplateRelations = relations(feedTemplate, ({ one }) => ({
   feed: one(feed, {
-    fields: [feedTemplate.templateId],
+    fields: [feedTemplate.feedId],
     references: [feed.id],
   }),
   template: one(template, {

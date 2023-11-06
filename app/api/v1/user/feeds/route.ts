@@ -33,6 +33,40 @@ export async function GET(req: NextRequest) {
         columns: {
           userId: true,
         },
+        where: (fields, { eq }) => eq(fields.active, true),
+      },
+      // user: {
+      //   columns: {},
+      //   with: {
+      //     userTemplates: {
+      //       columns: {},
+      //       with: {
+      //         template: {
+      //           columns: {
+      //             active: false,
+      //           },
+      //         },
+      //       },
+      //       where: (fields, { eq }) => eq(fields.active, true),
+      //     },
+      //   },
+      // },
+      feedTemplates: {
+        columns: {},
+        with: {
+          template: {
+            columns: {
+              active: false,
+            },
+          },
+        },
+        where: (fields, { eq }) => eq(fields.active, true),
+      },
+
+      notifications: {
+        columns: {
+          id: true,
+        },
       },
     },
 

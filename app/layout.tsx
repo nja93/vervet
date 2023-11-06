@@ -1,11 +1,10 @@
-import Provider from "@/app/components/Provider";
 import type { Metadata } from "next";
 import { Raleway } from "next/font/google";
 import "./globals.css";
 
-import NavBar from "@/app/components/NavBar";
 import { classNames } from "@/lib/utils/app";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 const inter = Raleway({ subsets: ["latin"] });
 
@@ -20,6 +19,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession();
+
+  //   if (session?.user) {
+  //     redirect("/home");
+  //   }
+
   return (
     <html lang="en" className="h-full bg-white ">
       <body
@@ -28,13 +32,7 @@ export default async function RootLayout({
           "h-full  text-gray-800 dark:text-gray-200 dark:bg-base-100"
         )}
       >
-        <Provider session={session}>
-          <NavBar>
-            {/* <WebNotifications /> */}
-            {children}
-          </NavBar>
-        </Provider>
-        <script>0</script>
+        {children}
       </body>
     </html>
   )
