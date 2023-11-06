@@ -1,4 +1,4 @@
-import TabNavigation from "@/app/profile/TabNavigation";
+import TabNavigation from "@/app/(app)/profile/TabNavigation";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

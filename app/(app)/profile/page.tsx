@@ -1,4 +1,4 @@
-import DashboardStats from "@/app/profile/DashboardStats";
+import DashboardStats from "@/app/(app)/profile/DashboardStats";
 import { tokenHeader } from "@/lib/utils/api";
 
 const Profile = async () => {

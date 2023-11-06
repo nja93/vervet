@@ -1,5 +1,5 @@
 "use client";
-import Pagination from "@/app/components/Pagination";
+import Pagination from "@/app/(app)/components/Pagination";
 import { TFeed, TUser } from "@/lib/db/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

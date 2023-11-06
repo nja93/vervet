@@ -1,6 +1,6 @@
 "use client";
-import Pagination from "@/app/components/Pagination";
-import DeleteFeed from "@/app/profile/feeds/DeleteFeed";
+import Pagination from "@/app/(app)/components/Pagination";
+import DeleteFeed from "@/app/(app)/profile/feeds/DeleteFeed";
 import { TFeed } from "@/lib/db/types";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";

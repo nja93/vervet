@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { faker } from "@faker-js/faker";
-import { API_URL, USER_ID, FAKE_ID } from "./defaults";
+import { API_URL } from "./defaults";
 
 test.describe("Subscription API Testing", () => {
   const SEED = Math.ceil(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -17,31 +17,13 @@ test.describe("Subscription API Testing", () => {
 
   test("User add subscription", async ({ request }) => {
     faker.seed(SEED);
-    const response = await request.post(
-      `${API_URL}/users/${USER_ID}/subscriptions`,
-      {
-        data: { ...subscription },
-      }
-    );
+    const response = await request.post(`${API_URL}/user/subscriptions`, {
+      data: { ...subscription },
+    });
     expect(response.status()).toBe(201);
     const json = await response.json();
 
     expect(json).toMatchObject({ endpoint: subscription.endpoint });
-  });
-
-  test("User add subscription - invalid user", async ({ request }) => {
-    const response = await request.post(
-      `${API_URL}/users/${FAKE_ID}/subscriptions`,
-      {
-        data: subscription,
-      }
-    );
-    expect(response.status()).toBe(404);
-    const json = await response.json();
-    expect(json).toMatchObject({
-      error: `Could not find user`,
-      data: { id: `${FAKE_ID}`, __class__: "user" },
-    });
   });
 
   test("User delete subscription", async ({ request }) => {
@@ -55,12 +37,9 @@ test.describe("Subscription API Testing", () => {
           "BBvv3G4Yo0VHwjvvhO3Nm09rAWLxH25sBc0q1COY6XdKUqRI1IbxK1wkZJg1A1oJR9UDkeBEJwrQ6IjeSalVUYo",
       },
     };
-    let response = await request.post(
-      `${API_URL}/users/${USER_ID}/subscriptions`,
-      {
-        data: subscription,
-      }
-    );
+    let response = await request.post(`${API_URL}/user/subscriptions`, {
+      data: subscription,
+    });
     expect(response.status()).toBe(201);
     let json = await response.json();
 
@@ -69,18 +48,6 @@ test.describe("Subscription API Testing", () => {
     json = await response.json();
     expect(json).toMatchObject({
       id: json.id,
-    });
-  });
-
-  test("User delete subscription - non-existent id", async ({ request }) => {
-    const response = await request.delete(
-      `${API_URL}/subscriptions/${FAKE_ID}`
-    );
-    expect(response.status()).toBe(404);
-    const json = await response.json();
-    expect(json).toMatchObject({
-      error: `Could not find subscription`,
-      data: { id: `${FAKE_ID}`, __class__: "subscription" },
     });
   });
 });

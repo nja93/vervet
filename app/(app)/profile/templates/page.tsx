@@ -1,6 +1,6 @@
-import ListTemplates from "@/app/profile/templates/ListTemplates";
-import TemplateTabs from "@/app/profile/templates/TemplateTabs";
-import UpdateTemplates from "@/app/profile/templates/UpdateTemplates";
+import ListTemplates from "@/app/(app)/profile/templates/ListTemplates";
+import TemplateTabs from "@/app/(app)/profile/templates/TemplateTabs";
+import UpdateTemplates from "@/app/(app)/profile/templates/UpdateTemplates";
 import { userTemplate } from "@/lib/db/schema";
 import { TFeed, TTemplate } from "@/lib/db/types";
 import { tokenHeader } from "@/lib/utils/api";

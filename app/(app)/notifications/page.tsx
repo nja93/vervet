@@ -1,6 +1,6 @@
-import NotificationView from "@/app/components/NotificationModalView";
-import Pagination from "@/app/components/Pagination";
-import SubscribeAction from "@/app/feeds/SubscribeAction";
+import NotificationView from "@/app/(app)/components/NotificationModalView";
+import Pagination from "@/app/(app)/components/Pagination";
+import SubscribeAction from "@/app/(app)/feeds/SubscribeAction";
 import {
   TFeed,
   TNotification,

@@ -1,6 +1,6 @@
 "use client";
 
-import Pagination from "@/app/components/Pagination";
+import Pagination from "@/app/(app)/components/Pagination";
 import { TFeed, TTemplate } from "@/lib/db/types";
 import { UUID } from "crypto";
 import Link from "next/link";

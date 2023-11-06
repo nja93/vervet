@@ -1,10 +1,10 @@
-import Pagination from "@/app/components/Pagination";
+import Pagination from "@/app/(app)/components/Pagination";
 import { TFeed, TUser, TUserFeed } from "@/lib/db/types";
 import { tokenHeader } from "@/lib/utils/api";
 import Link from "next/link";
 import React from "react";
 import moment from "moment";
-import UnfollowFeed from "@/app/subscriptions/UnfollowFeed";
+import UnfollowFeed from "@/app/(app)/subscriptions/UnfollowFeed";
 
 type SearchParams = {
   searchParams: { [key: string]: string | string[] | undefined };

@@ -1,5 +1,5 @@
-import FeedSearchResults from "@/app/search/FeedSearchResults";
-import UserSearchResults from "@/app/search/UserSearchResults";
+import FeedSearchResults from "@/app/(app)/search/FeedSearchResults";
+import UserSearchResults from "@/app/(app)/search/UserSearchResults";
 import { TFeed, TUser, TUserFeed } from "@/lib/db/types";
 import { tokenHeader } from "@/lib/utils/api";
 import React from "react";

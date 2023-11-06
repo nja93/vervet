@@ -43,8 +43,6 @@ const Notifications = () => {
     return navigator.serviceWorker
       .register("/vervet-sw.js")
       .then(function (registration) {
-        console.log("Service worker successfully registered.");
-        // setServiceWorker(registration);
         return registration;
       })
       .catch(function (err) {
@@ -101,7 +99,6 @@ const Notifications = () => {
     ).then((res) => {
       if (res.status !== 201) {
         setNotificationPermission("default");
-        console.log("failed, reverting to default");
       }
     });
   }

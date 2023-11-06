@@ -1,5 +1,5 @@
-import ListFeeds from "@/app/profile/feeds/ListFeeds";
-import UpdateFeeds from "@/app/profile/feeds/UpdateFeeds";
+import ListFeeds from "@/app/(app)/profile/feeds/ListFeeds";
+import UpdateFeeds from "@/app/(app)/profile/feeds/UpdateFeeds";
 import { TFeed } from "@/lib/db/types";
 import { tokenHeader } from "@/lib/utils/api";
 

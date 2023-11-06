@@ -18,7 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Fragment, ReactNode, useEffect, useState } from "react";
 
-import Notifications from "@/app/components/Notifications";
+import Notifications from "@/app/(app)/components/Notifications";
 import { classNames } from "@/lib/utils/app";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -47,7 +47,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
   };
 
   const navigation = [
-    { name: "Home", href: "/", icon: HomeIcon, current: path === "/" },
+    { name: "Home", href: "/home", icon: HomeIcon, current: path === "/home" },
     {
       name: "Feeds",
       href: "/feeds",
@@ -96,225 +96,232 @@ export default function NavBar({ children }: { children: ReactNode }) {
 
   return (
     <div>
-      <Transition.Root show={sidebarOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-50 lg:hidden"
-          onClose={setSidebarOpen}
-        >
-          <Transition.Child
-            as={Fragment}
-            enter="transition-opacity ease-linear duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="transition-opacity ease-linear duration-300"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
+      {session.status == "authenticated" && (
+        <Transition.Root show={sidebarOpen} as={Fragment}>
+          <Dialog
+            as="div"
+            className="relative z-50 lg:hidden"
+            onClose={setSidebarOpen}
           >
-            <div className="fixed inset-0 bg-gray-900/80" />
-          </Transition.Child>
-
-          <div className="fixed inset-0 flex">
             <Transition.Child
               as={Fragment}
-              enter="transition ease-in-out duration-300 transform"
-              enterFrom="-translate-x-full"
-              enterTo="translate-x-0"
-              leave="transition ease-in-out duration-300 transform"
-              leaveFrom="translate-x-0"
-              leaveTo="-translate-x-full"
+              enter="transition-opacity ease-linear duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity ease-linear duration-300"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
             >
-              <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-in-out duration-300"
-                  enterFrom="opacity-0"
-                  enterTo="opacity-100"
-                  leave="ease-in-out duration-300"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
-                    <button
-                      type="button"
-                      className="-m-2.5 p-2.5"
-                      onClick={() => setSidebarOpen(false)}
-                    >
-                      <span className="sr-only">Close sidebar</span>
-                      <XMarkIcon
-                        className="h-6 w-6 text-white"
-                        aria-hidden="true"
-                      />
-                    </button>
-                  </div>
-                </Transition.Child>
-                {/* Sidebar component, swap this element with another sidebar if you like */}
-                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-base-100 px-6 pb-4">
-                  <div className="flex h-16 shrink-0 items-center">
-                    <img
-                      className="h-8 w-auto"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                      alt="Vervet"
-                    />
-                  </div>
-                  <nav className="flex flex-1 flex-col">
-                    <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                      <li>
-                        <ul role="list" className="-mx-2 space-y-1">
-                          {navigation.map((item) => (
-                            <li key={item.name}>
+              <div className="fixed inset-0 bg-gray-900/80" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 flex">
+              <Transition.Child
+                as={Fragment}
+                enter="transition ease-in-out duration-300 transform"
+                enterFrom="-translate-x-full"
+                enterTo="translate-x-0"
+                leave="transition ease-in-out duration-300 transform"
+                leaveFrom="translate-x-0"
+                leaveTo="-translate-x-full"
+              >
+                <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-in-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in-out duration-300"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
+                      <button
+                        type="button"
+                        className="-m-2.5 p-2.5"
+                        onClick={() => setSidebarOpen(false)}
+                      >
+                        <span className="sr-only">Close sidebar</span>
+                        <XMarkIcon
+                          className="h-6 w-6 text-white"
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </div>
+                  </Transition.Child>
+
+                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-base-100 px-6 pb-4">
+                    <div className="flex h-16 shrink-0 items-center">
+                      {theme === "light" ? (
+                        <img
+                          className="h-8 w-auto"
+                          src="/img/vervet.png"
+                          alt="vervet"
+                        />
+                      ) : (
+                        <img
+                          className="h-8 w-auto"
+                          src="/img/vervet_white.png"
+                          alt="vervet"
+                        />
+                      )}
+                    </div>
+                    <nav className="flex flex-1 flex-col">
+                      <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                        <li>
+                          <ul role="list" className="-mx-2 space-y-1">
+                            {navigation.map((item) => (
+                              <li key={item.name}>
+                                <Link
+                                  href={item.href}
+                                  className={classNames(
+                                    item.current
+                                      ? "bg-gray-200 text-indigo-600"
+                                      : " hover:text-indigo-600 hover:bg-gray-50",
+                                    "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                  )}
+                                >
+                                  <item.icon
+                                    className={classNames(
+                                      item.current
+                                        ? "text-indigo-600"
+                                        : " group-hover:text-indigo-600",
+                                      "h-6 w-6 shrink-0"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                  {item.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </li>
+
+                        {session.status == "authenticated" && (
+                          <ul className="mt-auto">
+                            <li className="mt-auto">
                               <Link
-                                href={item.href}
+                                href="/profile"
                                 className={classNames(
-                                  item.current
-                                    ? "bg-gray-50 text-indigo-600"
+                                  path.startsWith("/profile")
+                                    ? "bg-gray-200 text-indigo-600"
                                     : " hover:text-indigo-600 hover:bg-gray-50",
                                   "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                 )}
                               >
-                                <item.icon
-                                  className={classNames(
-                                    item.current
-                                      ? "text-indigo-600"
-                                      : " group-hover:text-indigo-600",
-                                    "h-6 w-6 shrink-0"
-                                  )}
+                                <UserIcon
+                                  className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
                                   aria-hidden="true"
                                 />
-                                {item.name}
+                                Profile
                               </Link>
                             </li>
-                          ))}
-                        </ul>
-                      </li>
-
-                      {session.status == "authenticated" && (
-                        <ul className="mt-auto">
+                          </ul>
+                        )}
+                        {/* {session.status == "unauthenticated" && (
                           <li className="mt-auto">
-                            <Link
-                              href="/myFeeds"
-                              className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6  hover:bg-gray-50 hover:text-indigo-600"
-                            >
-                              <MegaphoneIcon
-                                className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
-                                aria-hidden="true"
-                              />
-                              My Feeds
-                            </Link>
-                          </li>
-                          <li className="mt-auto">
-                            <Link
-                              href="/profile"
-                              className={classNames(
-                                path.startsWith("/profile")
-                                  ? "bg-gray-50 text-indigo-600"
-                                  : " hover:text-indigo-600 hover:bg-gray-50",
-                                "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                              )}
-                            >
-                              <UserIcon
-                                className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
-                                aria-hidden="true"
-                              />
-                              Profile
-                            </Link>
-                          </li>
-                        </ul>
-                      )}
-                      {session.status == "unauthenticated" && (
-                        <li className="mt-auto">
-                          <Link href="/signin">
-                            <span className="flex lg:hidden font-semibold leading-6  ">
-                              <span
-                                className="ml-4 text-sm "
-                                // aria-hidden="true"
-                              >
-                                Log In
+                            <Link href="/signin">
+                              <span className="flex lg:hidden font-semibold leading-6  ">
+                                <span
+                                  className="ml-4 text-sm "
+                                  // aria-hidden="true"
+                                >
+                                  Log In
+                                </span>
+                                <ArrowRightIcon
+                                  className="ml-2 h-5 w-5 "
+                                  // aria-hidden="true"
+                                />
                               </span>
-                              <ArrowRightIcon
-                                className="ml-2 h-5 w-5 "
-                                // aria-hidden="true"
-                              />
-                            </span>
-                          </Link>
-                        </li>
-                      )}
-                    </ul>
-                  </nav>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </Dialog>
-      </Transition.Root>
+                            </Link>
+                          </li>
+                        )} */}
+                      </ul>
+                    </nav>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </Dialog>
+        </Transition.Root>
+      )}
 
       {/* Static sidebar for desktop */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        {/* Sidebar component, swap this element with another sidebar if you like */}
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white dark:bg-base-100 px-6 pb-4">
-          <div className="flex h-16 shrink-0 items-center">
-            <img
-              className="h-8 w-auto"
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-              alt="Your Company"
-            />
-          </div>
-          <nav className="flex flex-1 flex-col">
-            <ul role="list" className="flex flex-1 flex-col gap-y-7">
-              <li>
-                <ul role="list" className="-mx-2 space-y-1">
-                  {navigation.map((item) => (
-                    <li key={item.name}>
+      {session.status == "authenticated" && (
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white dark:bg-base-100 px-6 pb-4">
+            <div className="flex h-16 shrink-0 items-center">
+              {theme === "light" ? (
+                <img
+                  className="h-8 w-auto"
+                  src="/img/vervet.png"
+                  alt="vervet"
+                />
+              ) : (
+                <img
+                  className="h-8 w-auto"
+                  src="/img/vervet_white.png"
+                  alt="vervet"
+                />
+              )}
+            </div>
+            <nav className="flex flex-1 flex-col">
+              <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                <li>
+                  <ul role="list" className="-mx-2 space-y-1">
+                    {navigation.map((item) => (
+                      <li key={item.name}>
+                        <Link
+                          href={item.href}
+                          className={classNames(
+                            item.current
+                              ? "bg-gray-200 text-indigo-600"
+                              : " hover:text-indigo-600 hover:bg-gray-50",
+                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                          )}
+                        >
+                          <item.icon
+                            className={classNames(
+                              item.current
+                                ? "text-indigo-600"
+                                : " group-hover:text-indigo-600",
+                              "h-6 w-6 shrink-0"
+                            )}
+                            aria-hidden="true"
+                          />
+                          {item.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+
+                {session.status == "authenticated" && (
+                  <ul className="mt-auto">
+                    <li className="mt-auto">
                       <Link
-                        href={item.href}
+                        href="/profile"
                         className={classNames(
-                          item.current
-                            ? "bg-gray-50 text-indigo-600"
+                          path.startsWith("/profile")
+                            ? "bg-gray-200 text-indigo-600"
                             : " hover:text-indigo-600 hover:bg-gray-50",
                           "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                         )}
                       >
-                        <item.icon
-                          className={classNames(
-                            item.current
-                              ? "text-indigo-600"
-                              : " group-hover:text-indigo-600",
-                            "h-6 w-6 shrink-0"
-                          )}
+                        <UserIcon
+                          className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
                           aria-hidden="true"
                         />
-                        {item.name}
+                        Profile
                       </Link>
                     </li>
-                  ))}
-                </ul>
-              </li>
-
-              {session.status == "authenticated" && (
-                <ul className="mt-auto">
-                  <li className="mt-auto">
-                    <Link
-                      href="/profile"
-                      className={classNames(
-                        path.startsWith("/profile")
-                          ? "bg-gray-50 text-indigo-600"
-                          : " hover:text-indigo-600 hover:bg-gray-50",
-                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                      )}
-                    >
-                      <UserIcon
-                        className="h-6 w-6 shrink-0  group-hover:text-indigo-600"
-                        aria-hidden="true"
-                      />
-                      Profile
-                    </Link>
-                  </li>
-                </ul>
-              )}
-            </ul>
-          </nav>
+                  </ul>
+                )}
+              </ul>
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="lg:pl-72">
         <div className="sticky top-0 z-40 lg:mx-auto lg:max-w-full lg:px-8">
@@ -328,7 +335,6 @@ export default function NavBar({ children }: { children: ReactNode }) {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
 
-            {/* Separator */}
             <div
               className="h-6 w-px bg-gray-200 lg:hidden"
               aria-hidden="true"
@@ -375,12 +381,12 @@ export default function NavBar({ children }: { children: ReactNode }) {
 
                   <MoonIcon className={"swap-on fill-current w-6 h-6 hover:"} />
                 </label>
-                {/* Separator */}
+
                 <div
                   className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200"
                   aria-hidden="true"
                 />
-                {/* Profile dropdown */}
+
                 {session.status === "authenticated" && (
                   <Menu as="div" className="relative">
                     <Menu.Button className="-m-1.5 flex items-center p-1.5">
@@ -420,7 +426,7 @@ export default function NavBar({ children }: { children: ReactNode }) {
                               <Link
                                 href={item.href}
                                 className={classNames(
-                                  active ? "bg-gray-50  dark:bg-gray-800" : "",
+                                  active ? "bg-gray-200  dark:bg-gray-800" : "",
                                   "block px-3 py-1 text-sm leading-6 "
                                 )}
                               >
@@ -435,12 +441,12 @@ export default function NavBar({ children }: { children: ReactNode }) {
                             <button
                               onClick={() =>
                                 signOut({
-                                  callbackUrl: "https://localhost:3000",
+                                  callbackUrl: "https://localhost:3000/home",
                                 })
                               }
                               className={classNames(
-                                active ? "bg-gray-50  dark:bg-gray-800" : "",
-                                "block px-3 py-1 text-sm leading-6 "
+                                active ? "bg-gray-200  dark:bg-gray-800" : "",
+                                "block px-3 py-1 text-sm leading-6 w-full text-left "
                               )}
                             >
                               Sign Out
