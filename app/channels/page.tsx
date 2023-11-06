@@ -73,6 +73,7 @@ const Channels = async ({ searchParams }: SearchParams) => {
                         <img
                           className="h-8 w-8 rounded-full bg-gray-50"
                           src={channel.image ?? undefined}
+                          alt="user"
                         />
                         <span className="hidden lg:flex lg:items-center">
                           <Link

@@ -2,6 +2,7 @@
 import { TFeed } from "@/lib/db/types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 const SubscribeAction = ({
   feed,
@@ -15,7 +16,7 @@ const SubscribeAction = ({
 
   async function setSubscriptionState(method: "DELETE" | "POST") {
     const res = await fetch(
-      `/${process.env.NEXT_PUBLIC_API_PATH}/user/following/${feed.id}`,
+      `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/following/${feed.id}`,
       {
         method,
       }
@@ -24,11 +25,17 @@ const SubscribeAction = ({
         return res.json();
       })
       .then((json) => {
+        if (method === "DELETE") {
+          toast.success(`Unfollowed ${feed.title}`);
+        } else {
+          toast.success(`Following ${feed.title}`);
+        }
         setSubscribed(Object.keys(json).length !== 0);
 
         refresh();
       })
       .catch((err) => {
+        toast.error("Something went wrong");
         console.error("Could not complete action", err);
       });
   }

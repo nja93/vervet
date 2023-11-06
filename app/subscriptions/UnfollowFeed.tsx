@@ -2,6 +2,7 @@
 import { TFeed, TUserFeed } from "@/lib/db/types";
 import { useRouter } from "next/navigation";
 import React from "react";
+import toast from "react-hot-toast";
 
 type TFeedExtended = TFeed & {
   userFeeds: TUserFeed[];
@@ -14,15 +15,17 @@ const UnfollowFeed = ({ userFeed }: { userFeed: TUserFeedExtended }) => {
   const { refresh } = useRouter();
   const unfollow = async () => {
     const res = await fetch(
-      `/${process.env.NEXT_PUBLIC_API_PATH}/user/following/${userFeed.feedId}`,
+      `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/following/${userFeed.feedId}`,
       {
         method: "DELETE",
       }
     );
     const json = await res.json();
     if (res.ok) {
+      toast.success("Unfollowed feed");
       refresh();
     } else {
+      toast.success("Something went wrong");
       console.error("An error occured", res.statusText);
     }
   };

@@ -26,6 +26,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ProgressLoader } from "nextjs-progressloader";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { themeChange } from "theme-change";
+import { Toaster } from "react-hot-toast";
 
 export default function NavBar({ children }: { children: ReactNode }) {
   const session = useSession();
@@ -475,6 +476,17 @@ export default function NavBar({ children }: { children: ReactNode }) {
         <main className="py-10 dark:text-gray-200 dark:bg-base-100">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ProgressLoader />
+            <Toaster
+              position="top-right"
+              reverseOrder={false}
+              containerClassName=""
+              containerStyle={{}}
+              toastOptions={{
+                // Define default options
+                className: "dark:bg-base-100 dark:text-gray-50",
+                duration: 5000,
+              }}
+            />
             {children}
           </div>
         </main>

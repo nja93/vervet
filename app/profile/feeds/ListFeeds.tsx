@@ -3,6 +3,7 @@ import Pagination from "@/app/components/Pagination";
 import DeleteFeed from "@/app/profile/feeds/DeleteFeed";
 import { TFeed } from "@/lib/db/types";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface Props {
   feeds: TFeed[];
@@ -12,16 +13,14 @@ interface Props {
 }
 
 const ListFeeds = ({ feeds, page, count, limit }: Props) => {
-  const [feedTemplates, setFeedTemplates] = useState<any>([
-    { id: "f", name: "Loading..." },
-  ]);
-  const [userTemplates, setUserTemplates] = useState<any>([
-    [{ id: "g", name: "Loading..." }],
-  ]);
+  const [feedTemplates, setFeedTemplates] = useState<any>([]);
+  const [userTemplates, setUserTemplates] = useState<any>([[]]);
 
   useEffect(() => {
     async function getUserTemplates() {
-      await fetch(`/${process.env.NEXT_PUBLIC_API_PATH}/user/templates`)
+      await fetch(
+        `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/templates`
+      )
         .then((res) => res.json())
         .then((json) => setUserTemplates(json));
     }
@@ -38,8 +37,13 @@ const ListFeeds = ({ feeds, page, count, limit }: Props) => {
   }, [feeds]);
 
   const sendNotification = async (feedId: string, templateId: string) => {
+    if (!templateId) {
+      toast.error("Select a template to use");
+      return;
+    }
+
     const res = await fetch(
-      `/${process.env.NEXT_PUBLIC_API_PATH}/notifications`,
+      `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/notifications`,
       {
         method: "POST",
         body: JSON.stringify({
@@ -49,7 +53,9 @@ const ListFeeds = ({ feeds, page, count, limit }: Props) => {
       }
     );
     if (res.ok) {
+      toast.success("Request filed");
     } else {
+      toast.error("Something went wrong");
       console.error("An error occured", res.statusText);
     }
   };

@@ -11,8 +11,6 @@ const Profile = async () => {
     }
   ).then((res) => res.json());
 
-  // console.log("Stats", stats);
-
   return (
     <div className="py-5">
       <DashboardStats stats={stats} />

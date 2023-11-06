@@ -4,6 +4,7 @@ import { TFeed, TUser } from "@/lib/db/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 type FeedSearch = TFeed & {
   user: TUser;
@@ -29,8 +30,8 @@ const FeedSearchResults = ({
     method: "DELETE" | "POST",
     feed: FeedSearch
   ) {
-    const res = await fetch(
-      `/${process.env.NEXT_PUBLIC_API_PATH}/user/following/${feed.id}`,
+    await fetch(
+      `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/following/${feed.id}`,
       {
         method,
       }
@@ -57,6 +58,7 @@ const FeedSearchResults = ({
         }
       })
       .catch((err) => {
+        toast.error("Something went wrong");
         console.error("Could not complete action", err);
       });
   }
@@ -111,7 +113,7 @@ const FeedSearchResults = ({
                             <img
                               className="h-8 w-8 rounded-full bg-gray-50"
                               src={feed.user.image ?? undefined}
-                              
+                              alt="user"
                             />
                             <span className="hidden lg:flex lg:items-center">
                               <span

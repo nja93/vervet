@@ -13,6 +13,7 @@ const Heading = () => {
           <img
             className="h-8 w-8 rounded-full bg-gray-50"
             src={session?.data?.user.image ?? undefined}
+            alt="user"
           />
           <span className="hidden lg:flex lg:items-center">
             <span

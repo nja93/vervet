@@ -92,10 +92,13 @@ const Notifications = () => {
   }
 
   function sendSubscriptionToBackEnd(subscription: PushSubscription) {
-    return fetch(`/${process.env.NEXT_PUBLIC_API_PATH}/user/subscriptions`, {
-      method: "POST",
-      body: JSON.stringify(subscription),
-    }).then((res) => {
+    return fetch(
+      `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/subscriptions`,
+      {
+        method: "POST",
+        body: JSON.stringify(subscription),
+      }
+    ).then((res) => {
       if (res.status !== 201) {
         setNotificationPermission("default");
         console.log("failed, reverting to default");

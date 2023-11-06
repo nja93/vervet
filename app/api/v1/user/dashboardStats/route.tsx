@@ -74,12 +74,12 @@ export async function GET(req: NextRequest) {
       numberOfFeeds: { key: "Number of Feeds", value: { value: 0 } },
       mostSubscribedFeed: {
         key: "Most Subscribed Feed",
-        value: { id: "", name: "", value: 0, href: "" },
+        value: { id: "", name: "N/A", value: 0, href: "" },
       },
       alertsSent: { key: "Total Alerts Sent", value: { value: 0 } },
       mostAlertedFeed: {
         key: "Most Alerted Feed",
-        value: { id: "", name: "", value: 0, href: "" },
+        value: { id: "", name: "N/A", value: 0, href: "" },
       },
     }
   );

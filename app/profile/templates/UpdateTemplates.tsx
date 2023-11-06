@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
 
 type TUserTemplate = TTemplate & {
   userId?: string;
@@ -82,7 +83,7 @@ const UpdateTemplates = ({
       delete data.id;
 
       const res = await fetch(
-        `/${process.env.NEXT_PUBLIC_API_PATH}/templates/${_template.id}`,
+        `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/templates/${_template.id}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -92,6 +93,7 @@ const UpdateTemplates = ({
         }
       );
       if (res.ok) {
+        toast.success("Updated feed template");
         setTemplate(null);
 
         reset({
@@ -103,15 +105,16 @@ const UpdateTemplates = ({
         });
         push(`/profile/templates?type=${type}`);
       } else {
+        toast.error("Something went wrong");
         console.error("An error occured", res.statusText);
       }
     } else {
       delete data.feedId;
       let url;
       if (type === "feed") {
-        url = `/${process.env.NEXT_PUBLIC_API_PATH}/templates/feed/${id}`;
+        url = `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/templates/feed/${id}`;
       } else {
-        url = `/${process.env.NEXT_PUBLIC_API_PATH}/templates/user/${id}`;
+        url = `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/templates/user/${id}`;
       }
 
       const res = await fetch(url, {
@@ -119,10 +122,13 @@ const UpdateTemplates = ({
         body: JSON.stringify(data),
       });
       if (res.ok) {
+        toast.success("Updated global template");
         reset();
+
         setTemplate(null);
         refresh();
       } else {
+        toast.error("Something went wrong");
         console.error("An error occured", res.statusText);
       }
     }

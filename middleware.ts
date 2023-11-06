@@ -24,12 +24,10 @@ export default async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/api/v1/:users*",
     "/api/v1/:user*",
     "/api/v1/:notifications*",
     "/api/v1/:subscriptions*",
     "/api/v1/:templates*",
-    "/myFeeds/:path*",
     "/feeds/:path*",
     "/search/:path*",
     "/channels/:path*",

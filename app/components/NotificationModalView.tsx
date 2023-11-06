@@ -59,6 +59,7 @@ export default function NotificationView({
                         <img
                           className="h-8 w-8 rounded-full bg-gray-50"
                           src={userImage ?? undefined}
+                          alt="user"
                         />
                       </div>
                     </div>

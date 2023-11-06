@@ -5,6 +5,7 @@ import { TFeed, TTemplate } from "@/lib/db/types";
 import { UUID } from "crypto";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 type TUserTemplate = TTemplate & {
   userId: UUID;
@@ -32,14 +33,16 @@ const ListTemplates = ({
   const { refresh } = useRouter();
   const deleteTemplate = async (id: string) => {
     const res = await fetch(
-      `/${process.env.NEXT_PUBLIC_API_PATH}/templates/${id}`,
+      `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/templates/${id}`,
       {
         method: "DELETE",
       }
     );
     if (res.ok) {
+      toast.success("Deleted template");
       refresh();
     } else {
+      toast.error("Something went wrong");
       console.error("An error occured", res.statusText);
     }
   };

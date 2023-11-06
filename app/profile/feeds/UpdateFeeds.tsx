@@ -3,11 +3,11 @@
 import { TFeed } from "@/lib/db/types";
 import { classNames } from "@/lib/utils/app";
 import { ErrorMessage } from "@hookform/error-message";
-import { UUID } from "crypto";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 interface Props {
   feed: TFeed | null;
@@ -41,7 +41,7 @@ const UpdateFeeds = ({ feed }: Props) => {
     let res;
     if (_feed) {
       res = await fetch(
-        `/${process.env.NEXT_PUBLIC_API_PATH}/feeds/${_feed.id}`,
+        `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/feeds/${_feed.id}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -51,12 +51,16 @@ const UpdateFeeds = ({ feed }: Props) => {
         }
       );
     } else {
-      res = await fetch(`/${process.env.NEXT_PUBLIC_API_PATH}/user/feeds`, {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      res = await fetch(
+        `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/feeds`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+        }
+      );
     }
     if (res.ok) {
+      toast.success("Updated feeds");
       reset({ title: "" });
       setFeed(null);
       if (_feed) {
@@ -65,6 +69,7 @@ const UpdateFeeds = ({ feed }: Props) => {
         refresh();
       }
     } else {
+      toast.error("Something went wrong");
       console.error("An error occured", res.statusText);
     }
   };
