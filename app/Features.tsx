@@ -7,15 +7,15 @@ import {
 
 const features = [
   {
-    name: "Spam report",
+    name: "Fully Online",
     description:
-      "Autem reprehenderit aut debitis ut. Officiis harum omnis placeat blanditiis delectus sint vel et voluptatum. Labore asperiores non corporis molestiae.",
+      "The application promptly updates you as soon as an update is posted",
     icon: TrashIcon,
   },
   {
-    name: "Compose in markdown",
+    name: "Multiplatform",
     description:
-      "Illum et aut inventore. Ut et dignissimos quasi. Omnis saepe dolorum. Hic autem fugiat. Voluptatem officiis necessitatibus est.",
+      "'Our services are multiplatform delivering a consistent and seamless user experience accessible on any device, whether you are on phone, tablet or laptop",
     icon: PencilSquareIcon,
   },
   {
