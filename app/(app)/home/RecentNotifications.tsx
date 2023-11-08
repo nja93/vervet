@@ -1,20 +1,8 @@
 import NotificationView from "@/app/(app)/components/NotificationModalView";
-import Pagination from "@/app/(app)/components/Pagination";
-import SubscribeAction from "@/app/(app)/components/SubscribeAction";
-import {
-  TFeed,
-  TNotification,
-  TTemplate,
-  TUser,
-  TUserFeed,
-} from "@/lib/db/types";
-import { tokenHeader } from "@/lib/utils/api";
+import { TFeed, TNotification, TTemplate, TUser } from "@/lib/db/types";
 import moment from "moment";
 import Link from "next/link";
-
-type SearchParams = {
-  searchParams: { [key: string]: string | string[] | undefined };
-};
+import React from "react";
 
 type TFeedsWithUser = TFeed & {
   user: TUser;
@@ -25,61 +13,17 @@ type TNotificationWithFeeds = TNotification & {
   template: TTemplate;
 };
 
-const Notifications = async ({ searchParams }: SearchParams) => {
-  const requestHeaders = tokenHeader();
+interface Props {
+  notifications: TNotificationWithFeeds[];
+}
 
-  const page =
-    typeof searchParams.page === "string" ? parseInt(searchParams.page) : 1;
-  const limit =
-    typeof searchParams.limit === "string" ? parseInt(searchParams.limit) : 10;
-
-  const count = await fetch(
-    `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/notifications/count`,
-    {
-      headers: requestHeaders,
-    }
-  )
-    .then((res) => res.json())
-    .then((json) => json.count);
-
-  const notifications: TNotificationWithFeeds[] = await fetch(
-    `${process.env.NEXTAUTH_URL}/${
-      process.env.NEXT_PUBLIC_API_PATH
-    }/user/notifications?limit=${limit}&offset=${(page - 1) * limit}`,
-    {
-      headers: requestHeaders,
-    }
-  ).then((res) => res.json());
-
-  const feeds: TFeed[] = notifications.map((notification) => notification.feed);
-
-  const subscriptions: { [key: string]: boolean } = (
-    await Promise.all(
-      feeds.map((feed) =>
-        fetch(
-          `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/following/${feed.id}`,
-          {
-            headers: requestHeaders,
-            next: {
-              revalidate: 0,
-            },
-          }
-        ).then((res) => res.json())
-      )
-    )
-  ).reduce((acc, curr: TUserFeed) => {
-    if (Object.keys(curr).length) {
-      return { ...acc, [curr.feedId]: true };
-    }
-    return acc;
-  }, {});
-
+const RecentNotifications = ({ notifications }: Props) => {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-base font-semibold leading-6 ">Notifications</h1>
-          <p className="mt-2 text-sm ">Past notifications</p>
+          <p className="mt-2 text-sm ">People who have something to share</p>
         </div>
       </div>
       <div className="mt-8 flow-root">
@@ -152,25 +96,16 @@ const Notifications = async ({ searchParams }: SearchParams) => {
                         "MMMM Do YYYY HH:mm A"
                       )}
                     </td>
-                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                    {/* <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                       <SubscribeAction
                         feed={notification.feed}
                         subscriptions={subscriptions}
                       />
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
             </table>
-
-            <Pagination
-              pages={Array.from(
-                { length: Math.ceil(count / limit) },
-                (v, i) => i
-              )}
-              currentPage={page}
-              path="/notifications"
-            />
           </div>
         </div>
       </div>
@@ -178,4 +113,4 @@ const Notifications = async ({ searchParams }: SearchParams) => {
   );
 };
 
-export default Notifications;
+export default RecentNotifications;

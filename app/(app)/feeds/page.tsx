@@ -1,5 +1,5 @@
 import Pagination from "@/app/(app)/components/Pagination";
-import SubscribeAction from "@/app/(app)/feeds/SubscribeAction";
+import SubscribeAction from "@/app/(app)/components/SubscribeAction";
 import { TFeed, TUserFeed } from "@/lib/db/types";
 import { tokenHeader } from "@/lib/utils/api";
 

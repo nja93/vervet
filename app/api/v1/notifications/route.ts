@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(validator.error, { status: 400 });
   }
 
-  // Confirm user exists
+  // Confirm template exists
   const templateExists = await getCount("template", "id", body.templateId);
   if (!templateExists) {
     return resourceNotFound("template", body.templateId);
