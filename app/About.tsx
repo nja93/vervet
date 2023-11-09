@@ -26,7 +26,7 @@ export default function About() {
     <div className="mx-auto max-w-2xl">
      <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">About Us</h2>
      <p className="mt-4 text-lg leading-8 text-gray-600">
-      This project stems from a vision to enhance connectivity and alleviate inconveniences caused by the omission of vital information. What sets it apart is its focus on individuals who might not engage with other social media platforms. By minimizing noise, it ensures subscribers receive only the messages that genuinely interest them. The platform is designed to be succinct and appeals to frequent users. While initially catering to small and large business owners, there's a future outlook for improvement and expansion to a larger scale.</p>
+      This project stems from a vision to enhance connectivity and alleviate inconveniences caused by the omission of vital information. What sets it apart is its focus on individuals who might not engage with other social media platforms. By minimizing noise, it ensures subscribers receive only the messages that genuinely interest them. The platform is designed to be succinct and appeals to frequent users. While initially catering to small and large business owners, there&apos;s a future outlook for improvement and expansion to a larger scale.</p>
 
     </div>
     <ul
