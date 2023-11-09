@@ -58,6 +58,12 @@ export default function Header() {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+          <a
+            href="https://github.com/nja93/vervet"
+            className="mr-4 text-sm font-semibold leading-6 text-gray-900"
+          >
+            GitHub
+          </a>
           <Link
             href="/signin"
             className="text-sm font-semibold leading-6 text-gray-900"
@@ -74,11 +80,11 @@ export default function Header() {
       >
         <div className="fixed inset-0 z-50" />
         <Dialog.Panel className="fixed top-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-          <div className="flex items-center justify-between">
-            <a href="#" className="-m-1.5 p-1.5">
+          <div className="flex items-center justify-end">
+            {/* <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">Vervet</span>
               <img className="h-8 w-auto" src="/vervet.svg" alt="" />
-            </a>
+            </a> */}
             <button
               type="button"
               className="-m-2.5 rounded-md p-2.5 text-gray-700"
@@ -103,11 +109,18 @@ export default function Header() {
               </div>
               <div className="py-6">
                 <a
-                  href="#"
+                  href="https://github.com/nja93/vervet"
+                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                >
+                  GitHub
+                </a>
+                <a
+                  href="/signin"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                 >
                   Log in
                 </a>
+
               </div>
             </div>
           </div>
