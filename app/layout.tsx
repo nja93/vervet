@@ -25,7 +25,7 @@ export default async function RootLayout({
   //   }
 
   return (
-    <html lang="en" className="h-full bg-white ">
+    <html lang="en" className="h-full bg-white scroll-smooth">
       <body
         className={classNames(
           inter.className,

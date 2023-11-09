@@ -1,9 +1,10 @@
 import Pagination from "@/app/(app)/components/Pagination";
-import SubscribeAction from "@/app/(app)/channels/[id]/SubscribeAction";
+
 import { TFeed, TUserFeed } from "@/lib/db/types";
 import { tokenHeader } from "@/lib/utils/api";
 import React from "react";
 import Heading from "@/app/(app)/channels/[id]/Heading";
+import SubscribeAction from "@/app/(app)/components/SubscribeAction";
 
 type SearchParams = {
   searchParams: { [key: string]: string | string[] | undefined };

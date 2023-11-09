@@ -21,7 +21,7 @@ export default async function RootLayout({
 }) {
   const session = await getServerSession();
   return (
-    <html lang="en" className="h-full bg-white ">
+    <html lang="en" className="h-full bg-white scroll-smooth focus:scroll-auto">
       <body
         className={classNames(
           inter.className,

@@ -43,12 +43,14 @@ const FeedSearchResults = ({
         if (Object.keys(json).length !== 0) {
           const result = results.find((f) => f.id == feed.id);
           if (method === "DELETE") {
+            toast.success(`Unfollowed ${feed.title}`);
             setCurrentSubs((prevSubs) => ({
               ...prevSubs,
               [feed.id]: false,
             }));
             result?.userFeeds?.pop();
           } else {
+            toast.success(`Following ${feed.title}`);
             setCurrentSubs((prevSubs) => ({
               ...prevSubs,
               [feed.id]: true,
