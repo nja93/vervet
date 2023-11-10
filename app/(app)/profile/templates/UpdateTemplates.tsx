@@ -122,7 +122,7 @@ const UpdateTemplates = ({
         body: JSON.stringify(data),
       });
       if (res.ok) {
-        toast.success("Updated global template");
+        toast.success("Updated template");
         reset();
 
         setTemplate(null);
