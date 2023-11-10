@@ -12,6 +12,7 @@ type SearchParams = {
 
 type TFeedExtended = TFeed & {
   userFeeds: TUserFeed[];
+  user: TUser;
 };
 
 type TUserFeedExtended = TUserFeed & {
@@ -106,13 +107,13 @@ export default async function MySubscriptions({ searchParams }: SearchParams) {
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm ">
                       <Link
-                        href={`/channels/${userFeed.userId}`}
+                        href={`/channels/${userFeed.feed.user.id}`}
                         className="/owner/${}"
                       >
                         <div className="-m-1.5 flex items-center p-1.5">
                           <img
                             className="h-8 w-8 rounded-full bg-gray-50"
-                            src={userFeed.user.image ?? undefined}
+                            src={userFeed.feed.user.image ?? undefined}
                             alt="user"
                           />
                           <span className="hidden lg:flex lg:items-center">
@@ -120,7 +121,7 @@ export default async function MySubscriptions({ searchParams }: SearchParams) {
                               className="link link-hover link-primary ml-4 text-sm  leading-6 "
                               aria-hidden="true"
                             >
-                              {userFeed.user?.name ?? ""}
+                              {userFeed.feed.user?.name ?? ""}
                             </span>
                           </span>
                         </div>
