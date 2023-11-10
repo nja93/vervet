@@ -22,10 +22,12 @@ export default async function Home() {
         revalidate: 0,
       },
     }
-  ).then((res) => res.json()).catch(e => []);
+  )
+    .then((res) => res.json())
+    .catch((e) => []);
 
   const topFeeds: TFeedSubs[] = stats?.topFeeds ?? [];
-  const mostActiveFeeds: TFeedSubs[] = stats?.mostActiveFeeds ?? null;
+  const mostActiveFeeds: TFeedSubs[] = stats?.mostActiveFeeds ?? [];
   // const recentNotifications = stats.recentNotifications;
 
   const subscriptions: { [key: string]: boolean } = (
@@ -50,9 +52,9 @@ export default async function Home() {
     <>
       {/* <RecentNotifications notifications={recentNotifications} />
       <div className="divider py-12"></div> */}
-      <MostActiveFeeds feeds={mostActiveFeeds ?? []} subscriptions={subscriptions} />
+      <MostActiveFeeds feeds={mostActiveFeeds} subscriptions={subscriptions} />
       <div className="divider py-12"></div>
-      <TopFeeds feeds={topFeeds ?? []} subscriptions={subscriptions} />
+      <TopFeeds feeds={topFeeds} subscriptions={subscriptions} />
     </>
   );
 }

@@ -85,55 +85,41 @@ export async function GET(req: NextRequest) {
         .limit(10)
     ).map(({ feedId }) => feedId) ?? [];
 
-  const topFeeds = (
-    await db.query.feed.findMany({
-      columns: {
-        id: true,
-        title: true,
-      },
-      with: {
-        user: {
-          columns: {
-            id: true,
-            image: true,
-            name: true,
-          },
-        },
-        userFeeds: {
-          columns: {
-            id: true,
-          },
-          where: (fields, { eq }) => eq(fields.active, true),
-        },
-      },
-      where: (feed, { inArray }) => inArray(feed.id, topFeedsCount),
-    })
-  ).map((feed) => ({
-    id: feed.id,
-    title: feed.title,
-    userId: feed.user.id,
-    userName: feed.user.name,
-    userImage: feed.user.image,
-    subs: feed.userFeeds.length,
-  }));
+  let topFeeds: any = [];
 
-  // await db
-  //   .select({
-  //     id: feed.id,
-  //     title: feed.title,
-  //     userId: user.id,
-  //     userName: user.name,
-  //     userImage: user.image,
-  //   })
-  //   .from(feed)
-  //   .where(
-  //     inArray(
-  //       feed.id,
-  //       topFeedsCount.map(({ feedId }) => feedId)
-  //     )
-  //   )
-  //   .rightJoin(user, eq(user.id, userFeed.userId))
-  //   .limit(10);
+  if (topFeedsCount.length) {
+    topFeeds = (
+      await db.query.feed.findMany({
+        columns: {
+          id: true,
+          title: true,
+        },
+        with: {
+          user: {
+            columns: {
+              id: true,
+              image: true,
+              name: true,
+            },
+          },
+          userFeeds: {
+            columns: {
+              id: true,
+            },
+            where: (fields, { eq }) => eq(fields.active, true),
+          },
+        },
+        where: (feed, { inArray }) => inArray(feed.id, topFeedsCount),
+      })
+    ).map((feed) => ({
+      id: feed.id,
+      title: feed.title,
+      userId: feed?.user?.id,
+      userName: feed.user.name,
+      userImage: feed.user.image,
+      subs: feed.userFeeds.length,
+    }));
+  }
 
   let filter: string[] = [];
   let recentNotifications = (
