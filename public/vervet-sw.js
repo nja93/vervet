@@ -64,7 +64,7 @@ self.addEventListener(
 
     switch (event.action) {
       case "positive-action":
-        fetch(`/api/replies/${notificationId}`, {
+        fetch(`/api/v1/replies/${notificationId}`, {
           method: "PUT",
           body: JSON.stringify({
             action: "positive-action",
@@ -72,7 +72,7 @@ self.addEventListener(
         });
         break;
       case "negative-action":
-        fetch(`/api/replies/${notificationId}`, {
+        fetch(`/api/v1/replies/${notificationId}`, {
           method: "PUT",
           body: JSON.stringify({
             action: "negative-action",
@@ -80,7 +80,7 @@ self.addEventListener(
         });
         break;
       default:
-        fetch(`/api/replies/${notificationId}`, {
+        fetch(`/api/v1/replies/${notificationId}`, {
           method: "PUT",
           body: JSON.stringify({
             action: "",
