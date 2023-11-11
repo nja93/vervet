@@ -17,6 +17,13 @@ export async function GET(req: NextRequest) {
       userId: true,
     },
     with: {
+      user: {
+        columns:{
+          id: true,
+          name: true,
+          image: true,
+        }
+      },
       userFeeds: {
         columns: {
           active: true,

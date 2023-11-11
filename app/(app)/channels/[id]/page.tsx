@@ -1,16 +1,27 @@
 import Pagination from "@/app/(app)/components/Pagination";
 
-import { TFeed, TUserFeed } from "@/lib/db/types";
+import { TFeed, TUser, TUserFeed } from "@/lib/db/types";
 import { tokenHeader } from "@/lib/utils/api";
 import React from "react";
 import Heading from "@/app/(app)/channels/[id]/Heading";
 import SubscribeAction from "@/app/(app)/components/SubscribeAction";
 
 type SearchParams = {
+  params: {
+    id: string;
+  },
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-const ChannelFeeds = async ({ searchParams }: SearchParams) => {
+type TFeedWithSubs = TFeed & {
+  subs: string | number;
+}
+
+type TUserWithFeeds = TUser & {
+  feeds: TFeedWithSubs[];
+}
+
+const ChannelFeeds = async ({ params, searchParams }: SearchParams) => {
   const requestHeaders = tokenHeader();
 
   const page =
@@ -19,22 +30,31 @@ const ChannelFeeds = async ({ searchParams }: SearchParams) => {
     typeof searchParams.limit === "string" ? parseInt(searchParams.limit) : 10;
 
   const count = await fetch(
-    `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/feeds/count`,
+    `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/channels/${params.id}/count`,
     {
       headers: requestHeaders,
+      next: {
+        revalidate: 0
+      }
     }
   )
     .then((res) => res.json())
-    .then((json) => json.count);
+    .then((json) => json?.count);
 
-  const feeds: TFeed[] = await fetch(
+  const user: TUserWithFeeds = await fetch(
     `${process.env.NEXTAUTH_URL}/${
       process.env.NEXT_PUBLIC_API_PATH
-    }/feeds?limit=${limit}&offset=${(page - 1) * limit}`,
+    }/channels/${params.id}?limit=${limit}&offset=${(page - 1) * limit}`,
     {
       headers: requestHeaders,
+      next: {
+        revalidate: 0
+      }
     }
   ).then((res) => res.json());
+
+  let feeds;
+  feeds = user?.feeds ?? []
 
   const subscriptions: { [key: string]: boolean } = (
     await Promise.all(
@@ -43,6 +63,9 @@ const ChannelFeeds = async ({ searchParams }: SearchParams) => {
           `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/user/following/${feed.id}`,
           {
             headers: requestHeaders,
+            next: {
+              revalidate: 0
+            }
           }
         ).then((res) => res.json())
       )
@@ -58,7 +81,7 @@ const ChannelFeeds = async ({ searchParams }: SearchParams) => {
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <Heading />
+          <Heading user={user} />
         </div>
       </div>
       <div className="mt-8 flow-root">
@@ -92,7 +115,7 @@ const ChannelFeeds = async ({ searchParams }: SearchParams) => {
                       {feed.title}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm ">
-                      {feed.userFeeds?.length}
+                      {feed.subs}
                     </td>
                     <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                       <SubscribeAction

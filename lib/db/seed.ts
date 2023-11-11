@@ -20,7 +20,7 @@ import { Client } from "pg";
 
 loadEnvConfig(cwd());
 
-const USER_COUNT = 100;
+const USER_COUNT = 10;
 
 const main = async (seed = null) => {
   if (seed) {
@@ -64,12 +64,12 @@ const main = async (seed = null) => {
 
   // Create accounts (1-3 per user)
   let _accounts = [];
-  for (let userId of userIds) {
+  for (let id in userIds) {
     let count = simpleFaker.number.int({ min: 1, max: 3 });
 
     for (let i = 0; i < count; i++) {
       _accounts.push({
-        userId,
+        userId: userIds[id],
         type: "oauth" as "oauth",
         provider: faker.company.buzzPhrase(),
         providerAccountId: faker.string.nanoid(10),
@@ -84,12 +84,12 @@ const main = async (seed = null) => {
 
   // Create feeds, (to 3-5 per user) (feed owner)
   let _feeds = [];
-  for (let userId of userIds) {
+  for (let id in userIds) {
     let count = simpleFaker.number.int({ min: 3, max: 5 });
 
     for (let i = 0; i < count; i++) {
       _feeds.push({
-        userId,
+        userId: userIds[id],
         title: faker.company.buzzNoun(),
       });
     }
@@ -101,9 +101,9 @@ const main = async (seed = null) => {
 
   // Create subscriptions
   let _subs = [];
-  for (let userId of userIds) {
+  for (let id in userIds) {
     _subs.push({
-      userId,
+      userId: userIds[id],
       subscription: simpleFaker.string.hexadecimal({ length: 28 }),
       vendor: faker.company.buzzNoun(),
       endpoint: faker.string.sample(),
@@ -137,13 +137,13 @@ const main = async (seed = null) => {
   // Subscribe user (to 0-3 feeds) (feed subscriber)
   let _userFeeds: Omit<TUserFeed, "id">[] = [];
   let _feedIds = [...feedIds];
-  for (let userId of userIds) {
+  for (let id in userIds) {
     let count = simpleFaker.number.int({ max: 3 });
 
     for (let i = 0; i < count; i++) {
       let feedId = _feedIds.pop()!;
       _userFeeds.push({
-        userId,
+        userId: userIds[id],
         feedId,
       });
     }
@@ -162,12 +162,12 @@ const main = async (seed = null) => {
   // Attach users to 1-2 uniquely attached templates
   let _userTemplates: TUserTemplate[] = [];
   let index = 0;
-  for (let userId of userIds) {
+  for (let id in userIds) {
     let count = simpleFaker.number.int({ min: 1, max: 2 });
 
     for (let i = 0; i < count; i++) {
       _userTemplates.push({
-        userId,
+        userId: userIds[id],
         templateId: templateIds.at(index)!,
       });
       ++index;
@@ -209,7 +209,7 @@ const main = async (seed = null) => {
 
   //  Create notifications (1-2 per feed)
   let _notifs = [];
-  for (let _ of userIds) {
+  for (let _ in userIds) {
     let count = simpleFaker.number.int({ min: 1, max: 2 });
 
     for (let i = 0; i < count; i++) {
