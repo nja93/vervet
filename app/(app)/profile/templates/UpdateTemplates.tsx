@@ -114,7 +114,7 @@ const UpdateTemplates = ({
       if (type === "feed") {
         url = `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/templates/feed/${id}`;
       } else {
-        url = `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/templates/user/${id}`;
+        url = `${process.env.NEXTAUTH_URL}/${process.env.NEXT_PUBLIC_API_PATH}/templates/user`;
       }
 
       const res = await fetch(url, {
