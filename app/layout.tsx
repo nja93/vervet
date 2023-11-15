@@ -20,10 +20,6 @@ export default async function RootLayout({
 }) {
   const session = await getServerSession();
 
-  //   if (session?.user) {
-  //     redirect("/home");
-  //   }
-
   return (
     <html lang="en" className="h-full bg-white scroll-smooth">
       <body
@@ -35,5 +31,5 @@ export default async function RootLayout({
         {children}
       </body>
     </html>
-  )
+  );
 }

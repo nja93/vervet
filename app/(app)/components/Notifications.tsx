@@ -27,12 +27,10 @@ const Notifications = () => {
     if (!("serviceWorker" in navigator)) {
       setDisabled(true);
       console.error("No Service Worker support!");
-      // throw new Error("No Service Worker support!");
     }
     if (!("PushManager" in window)) {
       setDisabled(true);
       console.error("No Push API support!");
-      // throw new Error("No Push API Support!");
     }
   };
 

@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
     return resourceNotFound("feed", body.feedId);
   }
 
-  // TODO: Confirm if template and feed belong to same user?
   const triggerPushMsg = function (
     subId: string,
     sub: webPush.PushSubscription,
@@ -67,7 +66,6 @@ export async function POST(req: NextRequest) {
     .leftJoin(subscription, eq(subscription.userId, userFeed.userId))
     .where(and(eq(userFeed.feedId, body.feedId), eq(userFeed.active, true)))
     .then(function (subscriptions) {
-      // let stats = { requested: subscriptions.length, delievered: 0 };
       totalSubscribers = subscriptions.length;
       Promise.resolve() as Promise<void | webPush.SendResult>;
 

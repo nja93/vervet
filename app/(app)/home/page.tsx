@@ -28,7 +28,6 @@ export default async function Home() {
 
   const topFeeds: TFeedSubs[] = stats?.topFeeds ?? [];
   const mostActiveFeeds: TFeedSubs[] = stats?.mostActiveFeeds ?? [];
-  // const recentNotifications = stats.recentNotifications;
 
   const subscriptions: { [key: string]: boolean } = (
     await Promise.all(

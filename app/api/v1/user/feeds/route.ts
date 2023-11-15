@@ -35,22 +35,6 @@ export async function GET(req: NextRequest) {
         },
         where: (fields, { eq }) => eq(fields.active, true),
       },
-      // user: {
-      //   columns: {},
-      //   with: {
-      //     userTemplates: {
-      //       columns: {},
-      //       with: {
-      //         template: {
-      //           columns: {
-      //             active: false,
-      //           },
-      //         },
-      //       },
-      //       where: (fields, { eq }) => eq(fields.active, true),
-      //     },
-      //   },
-      // },
       feedTemplates: {
         columns: {},
         with: {
