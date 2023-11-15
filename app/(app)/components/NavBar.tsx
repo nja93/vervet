@@ -218,24 +218,6 @@ export default function NavBar({ children }: { children: ReactNode }) {
                             </li>
                           </ul>
                         )}
-                        {/* {session.status == "unauthenticated" && (
-                          <li className="mt-auto">
-                            <Link href="/signin">
-                              <span className="flex lg:hidden font-semibold leading-6  ">
-                                <span
-                                  className="ml-4 text-sm "
-                                  // aria-hidden="true"
-                                >
-                                  Log In
-                                </span>
-                                <ArrowRightIcon
-                                  className="ml-2 h-5 w-5 "
-                                  // aria-hidden="true"
-                                />
-                              </span>
-                            </Link>
-                          </li>
-                        )} */}
                       </ul>
                     </nav>
                   </div>
